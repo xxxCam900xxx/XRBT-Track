@@ -1,0 +1,21 @@
+name: Database
+services:
+  database:
+    container_name: Database
+    build:
+      context: ../App/database
+      dockerfile: ../../Docker/database/Dockerfile
+    env_file:
+      - /database/db.env
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata:

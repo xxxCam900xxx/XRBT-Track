@@ -1,20 +1,13 @@
-# Verwende ein Python-Image
-FROM python:3.9
+# Ubuntu Image laden
+FROM ubuntu:22.04
 
-# Arbeitsverzeichnis im Container erstellen
-WORKDIR /usr/src/app
+WORKDIR /app
 
-# Kopiere die Anforderungen (falls du Anforderungen hast)
-COPY ../app/backend/requirements.txt ./
+COPY . /app
 
-# Installiere die Python-Abhängigkeiten
+RUN apt-get update && apt-get install -y python3 python3-pip
 RUN pip install --no-cache-dir -r requirements.txt
+RUN cd /app
 
-# Kopiere die gesamte Backend-App
-COPY ../app/backend ./
-
-# Exponiere den Port 5000
-EXPOSE 5000
-
-# Starte die Flask-App (oder dein Python-Backend)
-CMD ["python", "app.py"]
+EXPOSE 8000
+CMD ["uvicorn", "main:app", "--reload", "--host", "0.0.0.0", "--port", "8000"]

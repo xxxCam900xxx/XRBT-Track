@@ -1,4 +1,2 @@
-flask
-psycopg2
-flask-cors
-python-dotenv
+fastapi[standard]
+uvicorn[standard]

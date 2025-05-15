@@ -1,22 +1,10 @@
-FROM node:16
+FROM node:18-slim
 
-# Arbeitsverzeichnis im Container erstellen
-WORKDIR /usr/src/app
+COPY package*.json /
 
-# Kopiere die package.json und package-lock.json
-COPY ../app/frontend/package*.json ./
+RUN npm ci
 
-# Installiere die React-Abhängigkeiten
-RUN npm install
+COPY . /
 
-# Kopiere den gesamten React-Code
-COPY ../app/frontend/ ./
-
-# Baue die React-App
-RUN npm run build
-
-# Exponiere den Port 3000
-EXPOSE 3000
-
-# Starte die React-App
-CMD ["npm", "start"]
+EXPOSE 5173
+CMD [ "npm", "run", "dev"]

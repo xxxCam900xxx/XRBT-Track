@@ -1,17 +1,5 @@
-version: "3"
-services:
-  frontend:
-    build:
-      context: ..
-      dockerfile: docker/frontend/Dockerfile
-    ports:
-      - "3000:3000"
-    depends_on:
-      - backend
-
-  backend:
-    build:
-      context: ..
-      dockerfile: docker/backend/Dockerfile
-    ports:
-      - "5000:5000"
+name: XRBT
+include:
+  - ./compose.db.yaml
+  - ./compose.backend.yaml
+  - ./compose.frontend.yaml

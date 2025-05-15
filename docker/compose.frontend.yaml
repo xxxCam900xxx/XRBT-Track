@@ -1,0 +1,13 @@
+name: Frontend
+services:
+  frontend:
+    container_name: Frontend
+    build:
+      context: ../App/frontend
+      dockerfile: ../../Docker/frontend/Dockerfile
+    volumes:
+      - ../App/frontend:/app
+    working_dir: /app
+    ports:
+      - "5173:5173"
+    command: ["npm", "run", "live"]
