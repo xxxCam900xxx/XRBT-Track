@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Budget } from '../types/budget';
 import CreateNewBudgetPopUp from '../widgets/CreateNewBudgetPopUp';
+import { useNavigate } from 'react-router-dom';
 
 function BudgetSelectionView() {
   const [data, setData] = useState<Budget[]>([]);
@@ -8,6 +9,7 @@ function BudgetSelectionView() {
   const [error, setError] = useState<string | null>(null);
   const [displayNewBudgetPopUp, setDisplayNewBudgetPopUp] = useState<boolean>(false);
   const backendUrl = "http://localhost:8000"
+  const navigate = useNavigate();
 
   const fetchBudgets = () => {
     fetch(`${backendUrl}/budget/`)
@@ -40,6 +42,12 @@ function BudgetSelectionView() {
       });
   }
 
+  const handleClickBudgetPlan = (id: string) => {
+    navigate("/plan", {
+      state: { budget_id: id }
+    })
+  }
+
   useEffect(() => {
     fetchBudgets();
   }, []);
@@ -55,6 +63,7 @@ function BudgetSelectionView() {
           <div
             key={budget.budget_id}
             className="border-gray-200 border flex flex-row items-center justify-between p-5 rounded-xl relative gap-5 cursor-pointer shadow-lg"
+            onClick={() => handleClickBudgetPlan(budget.budget_id)}
           >
             <div className="flex flex-col w-full gap-2">
               <h1 className="text-2xl font-semibold">{budget.titel}</h1>
@@ -71,6 +80,7 @@ function BudgetSelectionView() {
                 className="bg-sky-400 text-md aspect-square w-[40px] rounded-xl cursor-pointer"
                 onClick={(e) => {
                   e.preventDefault();
+                  e.stopPropagation();
                   deleteBudgetById(budget.budget_id);
                 }}
               >
@@ -92,7 +102,7 @@ function BudgetSelectionView() {
         <button className="shadow-xl px-5 py-2 h-fit bg-sky-300 rounded-md cursor-pointer text-white font-semibold">Credits</button>
       </section>
 
-      <CreateNewBudgetPopUp 
+      <CreateNewBudgetPopUp
         displayNewBudgetPopUp={displayNewBudgetPopUp}
         setDisplayNewBudgetPopUp={setDisplayNewBudgetPopUp}
       />
