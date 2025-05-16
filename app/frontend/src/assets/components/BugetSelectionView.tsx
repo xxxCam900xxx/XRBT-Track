@@ -28,7 +28,7 @@ function BudgetSelectionView() {
   return (
     <>
       {/* Budget Folder List */}
-      <section className="bg-green-300 w-full h-full flex flex-col p-5 gap-4">
+      <section className="bg-green-300 w-full h-full max-h-full overflow-y-auto flex flex-col p-5 gap-4">
         {data.map((budget) => (
           <div
             key={budget.budget_id}
