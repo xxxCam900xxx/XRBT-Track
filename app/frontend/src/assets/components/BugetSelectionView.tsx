@@ -6,7 +6,7 @@ function BudgetSelectionView() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
+  const fetchBudgets = () => {
     fetch('http://localhost:8000/budget/')
       .then((response) => {
         if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
@@ -20,6 +20,10 @@ function BudgetSelectionView() {
         setError(err.message);
         setLoading(false);
       });
+  }
+
+  useEffect(() => {
+    fetchBudgets();
   }, []);
 
   if (loading) return <p>Loading...</p>;
