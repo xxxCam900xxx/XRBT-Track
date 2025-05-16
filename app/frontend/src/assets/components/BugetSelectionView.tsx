@@ -1,13 +1,14 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Budget } from '../types/budget';
 
 function BudgetSelectionView() {
   const [data, setData] = useState<Budget[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const backendUrl = "http://localhost:8000"
 
   const fetchBudgets = () => {
-    fetch('http://localhost:8000/budget/')
+    fetch(`${backendUrl}/budget/`)
       .then((response) => {
         if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
         return response.json();
@@ -15,6 +16,21 @@ function BudgetSelectionView() {
       .then((data: Budget[]) => {
         setData(data);
         setLoading(false);
+      })
+      .catch((err) => {
+        setError(err.message);
+        setLoading(false);
+      });
+  }
+
+  const deleteBudgetById = (id: string) => {
+    fetch(`${backendUrl}/budget/${id}`, {
+      method: "DELETE"
+    })
+      .then((response) => {
+        if (response.ok) {
+          fetchBudgets();
+        }
       })
       .catch((err) => {
         setError(err.message);
@@ -49,7 +65,13 @@ function BudgetSelectionView() {
               </div>
             </div>
             <div className="flex h-full items-start">
-              <button className="bg-sky-400 text-md aspect-square w-[40px] rounded-xl cursor-pointer">
+              <button
+                className="bg-sky-400 text-md aspect-square w-[40px] rounded-xl cursor-pointer"
+                onClick={(e) => {
+                  e.preventDefault();
+                  deleteBudgetById(budget.budget_id);
+                }}
+              >
                 <i className="fa-solid fa-trash text-white"></i>
               </button>
             </div>
