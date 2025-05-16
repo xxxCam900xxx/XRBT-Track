@@ -47,3 +47,12 @@ VALUES
     ('Sommerurlaub', 1500.00, 1800.00),
     ('Auto Reparatur', 0.00, 900.00),
     ('Nebenprojekt', 500.00, 100.00);
+
+-- Beispiel 1: Januar für Budget 1 (Privat)
+INSERT INTO 
+    Monat (budget_id, monat_name, start_datum, end_datum, total_einnahmen, total_ausgaben)
+VALUES 
+    (1, 'Januar', '2025-01-01', '2025-01-31', 3000.00, 2500.00),
+    (1, 'Februar', '2025-02-01', '2025-02-28'),
+    (2, 'März', '2025-03-01', '2025-03-31', 1000.00, 1500.00)
+    (2, 'April', '2025-04-01', '2025-04-30', 2000.00, 2000.00);
