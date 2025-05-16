@@ -1,2 +1,4 @@
-fastapi[standard]
 uvicorn[standard]
+fastapi[all] 
+sqlalchemy[asyncio]
+asyncpg
