@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { Budget } from '../types/budget';
+import CreateNewBudgetPopUp from '../widgets/CreateNewBudgetPopUp';
 
 function BudgetSelectionView() {
   const [data, setData] = useState<Budget[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [displayNewBudgetPopUp, setDisplayNewBudgetPopUp] = useState<boolean>(false);
   const backendUrl = "http://localhost:8000"
 
   const fetchBudgets = () => {
@@ -81,9 +83,19 @@ function BudgetSelectionView() {
 
       {/* Tools */}
       <section className="w-full h-[100px] p-5 flex flex-row gap-5 items-center justify-center">
-        <button className="shadow-xl px-5 h-fit w-3/5 py-2 bg-sky-300 rounded-md cursor-pointer text-white font-semibold">Create</button>
+        <button
+          className="shadow-xl px-5 h-fit w-3/5 py-2 bg-sky-300 rounded-md cursor-pointer text-white font-semibold"
+          onClick={() => setDisplayNewBudgetPopUp(true)}
+        >
+          Create
+        </button>
         <button className="shadow-xl px-5 py-2 h-fit bg-sky-300 rounded-md cursor-pointer text-white font-semibold">Credits</button>
       </section>
+
+      <CreateNewBudgetPopUp 
+        displayNewBudgetPopUp={displayNewBudgetPopUp}
+        setDisplayNewBudgetPopUp={setDisplayNewBudgetPopUp}
+      />
     </>
   );
 }
