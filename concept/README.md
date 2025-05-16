@@ -20,5 +20,8 @@ Die XRBT App hat folgenden nützen, es wird ein kleines Nebenprojekt welches mir
 - **Backend** (Python + FastAPI)
 - **Database** (PostgresSQL)
 
+### Database Structure
+--> [Klicken Sie hier, um mehr zu erfahren](./database/README.md) <--
+
 ### XRBT - Logo
 ![XRBT-Track Logo](./XRBT-Track%20Logo.png)
