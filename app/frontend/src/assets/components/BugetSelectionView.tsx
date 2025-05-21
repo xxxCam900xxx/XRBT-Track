@@ -42,9 +42,9 @@ function BudgetSelectionView() {
       });
   }
 
-  const handleClickBudgetPlan = (id: string) => {
+  const handleClickBudgetPlan = (id: string, name: string) => {
     navigate("/plan", {
-      state: { budget_id: id }
+      state: { budget_id: id, budget_name: name }
     })
   }
 
@@ -63,7 +63,7 @@ function BudgetSelectionView() {
           <div
             key={budget.budget_id}
             className="border-gray-200 border flex flex-row items-center justify-between p-5 rounded-xl relative gap-5 cursor-pointer shadow-lg"
-            onClick={() => handleClickBudgetPlan(budget.budget_id)}
+            onClick={() => handleClickBudgetPlan(budget.budget_id, budget.titel)}
           >
             <div className="flex flex-col w-full gap-2">
               <h1 className="text-2xl font-semibold">{budget.titel}</h1>

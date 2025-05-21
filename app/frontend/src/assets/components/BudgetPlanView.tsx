@@ -1,15 +1,21 @@
 import { useEffect, useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { Month } from '../types/month';
 
 function BudgetPlanView() {
 
     const location = useLocation();
     const { budget_id } = location.state || {};
+    const { budget_name } = location.state || {};
     const [data, setData] = useState<Month[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const backendUrl = "http://localhost:8000"
+    const navigate = useNavigate();
+
+    const goBack = () => {
+        navigate("/")
+    }
 
     const fetchBudgets = () => {
         fetch(`${backendUrl}/month/${budget_id}`)
@@ -40,27 +46,42 @@ function BudgetPlanView() {
             <section
                 className="w-2/3 flex justify-center items-center p-5"
             >
-
+                <h1 className="text-4xl text-white">
+                    {budget_name} - Overall Dashboard Coming Soon...
+                </h1>
             </section>
             {/* Monate */}
             <section
-                className="w-1/3 flex flex-col h-full rounded-l-2xl overflow-hidden bg-white"
+                className="w-1/3 flex flex-col h-full rounded-l-2xl overflow-auto bg-white"
             >
                 {data.map((month) => (
                     <div
                         key={month.monat_id}
-                        className="p-4 border-b border-gray-200 hover:bg-gray-100 cursor-pointer"
+                        className="p-4 border-b border-gray-200 hover:bg-gray-100 cursor-pointer flex flex-row gap-5 items-center justify-between"
                     >
-                        <h3 className="text-lg font-semibold">{month.monat_name}</h3>
-                        <p className="text-sm text-gray-600">
-                            {month.start_datum} – {month.end_datum}
-                        </p>
-                        <p className="text-sm">Einnahmen: {month.total_einnahmen} €</p>
-                        <p className="text-sm">Ausgaben: {month.total_ausgaben} €</p>
-                        <p className="text-sm font-medium">Umsatz: {month.total_umsatz} €</p>
+                        <div className='w-[200px]'>
+                            <h3 className="text-lg font-semibold">{month.monat_name}</h3>
+                            <p className="text-sm text-gray-600">
+                                {month.start_datum} – {month.end_datum}
+                            </p>
+                        </div>
+                        <div className='w-1/3 text-center rounded-md overflow-hidden'>
+                            <p className="bg-green-300 text-sm">Einnahmen: {month.total_einnahmen} CHF</p>
+                            <p className="bg-red-300 text-sm">Ausgaben: {month.total_ausgaben} CHF</p>
+                            <p className="bg-gray-100 text-sm font-medium">Umsatz: {month.total_umsatz} CHF</p>
+                        </div>
+                        <div className='flex gap-2'>
+                            <button className='bg-sky-400 text-md aspect-square w-[40px] rounded-xl cursor-pointer'><i className="fa-solid fa-trash text-white"></i></button>
+                        </div>
                     </div>
                 ))}
             </section>
+            <button
+                className='fixed top-5 left-5 bg-white text-md aspect-square w-[40px] rounded-xl cursor-pointer flex items-center justify-center'
+                onClick={goBack}
+            >
+                <i className="fa-solid fa-xmark text-sky-400 text-2xl"></i>
+            </button>
         </main>
     )
 }
