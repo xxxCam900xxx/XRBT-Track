@@ -6,8 +6,11 @@ async def getAllMonths(db: AsyncSession):
     result = await db.execute(select(Monat))
     return result.scalars().all()
 
-async def getAllMonthsByID(id, db: AsyncSession):
+async def getAllMonthsByBudgetID(id, db: AsyncSession):
     result = await db.execute(select(Monat).where(Monat.budget_id == int(id)).order_by(Monat.start_datum))
     return result.scalars().all()
     
+async def getAllMonthsByID(id, db: AsyncSession):
+    result = await db.execute(select(Monat).where(Monat.monat_id == int(id)))
+    return result.scalars().all()
     
