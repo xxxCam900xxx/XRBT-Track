@@ -4,7 +4,7 @@ CREATE TABLE Budget (
     titel TEXT NOT NULL,
     total_einnahmen NUMERIC(10, 2) DEFAULT 0,
     total_ausgaben NUMERIC(10, 2) DEFAULT 0,
-    total_umsatz NUMERIC(10, 2) GENERATED ALWAYS AS (total_einnahmen - total_ausgaben) STORED
+    total_umsatz NUMERIC(10, 2) GENERATED ALWAYS AS (total_einnahmen + total_ausgaben) STORED
 );
 
 -- Tabelle: Monat
@@ -16,7 +16,7 @@ CREATE TABLE Monat (
     end_datum DATE NOT NULL,
     total_einnahmen NUMERIC(10, 2) DEFAULT 0,
     total_ausgaben NUMERIC(10, 2) DEFAULT 0,
-    total_umsatz NUMERIC(10, 2) GENERATED ALWAYS AS (total_einnahmen - total_ausgaben) STORED
+    total_umsatz NUMERIC(10, 2) GENERATED ALWAYS AS (total_einnahmen + total_ausgaben) STORED
 );
 
 -- Tabelle: Buchung
@@ -42,17 +42,18 @@ CREATE TABLE Template (
 INSERT INTO
     Budget (titel, total_einnahmen, total_ausgaben)
 VALUES
-    ('Monat April', 3000.00, 2200.00),
-    ('Monat Mai', 3200.00, 2500.00),
-    ('Sommerurlaub', 1500.00, 1800.00),
-    ('Auto Reparatur', 0.00, 900.00),
-    ('Nebenprojekt', 500.00, 100.00);
+    ('Testbudget', 900, -1300);
 
--- Beispiel 1: Januar für Budget 1 (Privat)
 INSERT INTO 
     Monat (budget_id, monat_name, start_datum, end_datum, total_einnahmen, total_ausgaben)
 VALUES 
-    (1, 'Januar', '2025-01-01', '2025-01-31', 3000.00, 2500.00),
-    (1, 'Februar', '2025-02-01', '2025-02-28', 0, 0),
-    (2, 'März', '2025-03-01', '2025-03-31', 1000.00, 1500.00),
-    (2, 'April', '2025-04-01', '2025-04-30', 2000.00, 2000.00);
+    (1, 'Januar', '2025-01-01', '2025-01-31', 900, -1300);
+
+INSERT INTO 
+    Buchung (monat_id, typ, titel, datum, betrag)
+VALUES 
+    (1, 'Einnahme', 'Einnahme A', '2025-01-01', 200),
+    (1, 'Einnahme', 'Einnahme B', '2025-01-02', 400),
+    (1, 'Ausgabe', 'Ausgabe A', '2025-01-03', -300),
+    (1, 'Einnahme', 'Einnahme C', '2025-01-04', 300),
+    (1, 'Ausgabe', 'Ausgabe B', '2025-01-05', -1000);
