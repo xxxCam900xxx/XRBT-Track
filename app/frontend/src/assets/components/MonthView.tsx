@@ -1,34 +1,138 @@
 import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Month } from '../types/month';
+import { Booking } from '../types/booking';
 
 function MonthView() {
-
     const location = useLocation();
     const { month_id } = location.state || {};
-    const backendUrl = "http://localhost:8000"
+    const backendUrl = "http://localhost:8000";
     const navigate = useNavigate();
+
+    const [incomings, setIncomings] = useState<Booking[]>([]);
+    const [outgoings, setOutgoings] = useState<Booking[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
 
     const goBack = () => {
         navigate(-1);
-    }
+    };
+
+    const fetchAllIncommings = () => {
+        fetch(`${backendUrl}/booking/einnahmen`)
+            .then((response) => {
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                return response.json();
+            })
+            .then((data: Booking[]) => {
+                setIncomings(data);
+                setLoading(false);
+            })
+            .catch((err) => {
+                setError(err.message);
+                setLoading(false);
+            });
+    };
+
+    const fetchAllOutcommings = () => {
+        fetch(`${backendUrl}/month/ausgaben`)
+            .then((response) => {
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                return response.json();
+            })
+            .then((data: Booking[]) => {
+                setOutgoings(data);
+                setLoading(false);
+            })
+            .catch((err) => {
+                setError(err.message);
+                setLoading(false);
+            });
+    };
+
+    useEffect(() => {
+        if (!month_id) {
+            navigate("/");
+        } else {
+            fetchAllIncommings();
+            fetchAllOutcommings();
+        }
+    }, [month_id]);
 
     return (
         <main className="flex flex-row h-full w-full bg-sky-300">
             {/* Dashboard */}
-            <section
-                className="w-3/5 flex justify-center items-center p-5"
-            >
-                <h1 className="text-4xl text-white">
-                    Eintrag
-                </h1>
+            <section className="w-2/3 flex justify-center items-center px-20 py-5 gap-5">
+                {/* Einnahmen */}
+                <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
+                    <table className="w-full text-sm text-left rtl:text-right text-gray-500">
+                        <caption className="p-5 text-lg font-semibold text-left rtl:text-right text-gray-900 bg-white">
+                            Einnahmen
+                            <p className="mt-1 text-sm font-normal text-gray-500">
+                                Diese Liste beinhalten alle Einnahmen diesen Monats
+                            </p>
+                        </caption>
+                        <thead className="text-xs text-gray-700 uppercase bg-green-100">
+                            <tr>
+                                <th className="px-6 py-3">Datum</th>
+                                <th className="px-6 py-3">Titel</th>
+                                <th className="px-6 py-3">Betrag</th>
+                                <th className="px-6 py-3"><span className="sr-only">Edit</span></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {incomings.map((item, index) => (
+                                <tr key={index} className="bg-green-50">
+                                    <td className="px-6 py-4">{item.datum}</td>
+                                    <td className="px-6 py-4">{item.titel}</td>
+                                    <td className="px-6 py-4">{item.betrag}</td>
+                                    <td className="px-6 py-4 text-right">
+                                        <a href="#" className="font-medium text-blue-600 hover:underline">Edit</a>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+
+                {/* Ausgaben */}
+                <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
+                    <table className="w-full text-sm text-left rtl:text-right text-gray-500">
+                        <caption className="p-5 text-lg font-semibold text-left rtl:text-right text-gray-900 bg-white">
+                            Ausgaben
+                            <p className="mt-1 text-sm font-normal text-gray-500">
+                                Diese Liste beinhalten alle Ausgaben diesen Monats
+                            </p>
+                        </caption>
+                        <thead className="text-xs text-gray-700 uppercase bg-red-100">
+                            <tr>
+                                <th className="px-6 py-3">Datum</th>
+                                <th className="px-6 py-3">Titel</th>
+                                <th className="px-6 py-3">Betrag</th>
+                                <th className="px-6 py-3"><span className="sr-only">Edit</span></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {outgoings.map((item, index) => (
+                                <tr key={index} className="bg-red-50">
+                                    <td className="px-6 py-4">{item.datum}</td>
+                                    <td className="px-6 py-4">{item.titel}</td>
+                                    <td className="px-6 py-4">{item.betrag}</td>
+                                    <td className="px-6 py-4 text-right">
+                                        <a href="#" className="font-medium text-blue-600 hover:underline">Edit</a>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
             </section>
-            {/* Monate */}
-            <section
-                className="w-2/5 flex flex-col h-full rounded-l-2xl overflow-auto bg-white"
-            >
-                
+
+            {/* Monate Navigation oder Detailanzeige */}
+            <section className="w-1/3 flex flex-col h-full rounded-l-2xl overflow-auto bg-white">
+                {/* Platz für weitere Inhalte */}
             </section>
+
+            {/* Zurück-Button */}
             <button
                 className='fixed top-5 left-5 bg-white text-md aspect-square w-[40px] rounded-xl cursor-pointer flex items-center justify-center'
                 onClick={goBack}
@@ -36,7 +140,7 @@ function MonthView() {
                 <i className="fa-solid fa-xmark text-sky-400 text-2xl"></i>
             </button>
         </main>
-    )
+    );
 }
 
-export default MonthView
+export default MonthView;

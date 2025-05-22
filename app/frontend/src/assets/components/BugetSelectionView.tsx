@@ -69,8 +69,8 @@ function BudgetSelectionView() {
               <h1 className="text-2xl font-semibold">{budget.titel}</h1>
               <div className="flex flex-col justify-center w-full items-center rounded-lg overflow-hidden">
                 <div className="flex flex-row justify-around w-full">
-                  <p className="border-b border-gray-300 w-full text-center p-1 bg-green-300">+ {budget.total_einnahmen}</p>
-                  <p className="border-b border-gray-300 w-full text-center p-1 bg-red-300">- {budget.total_ausgaben}</p>
+                  <p className="border-b border-gray-300 w-full text-center p-1 bg-green-300">{budget.total_einnahmen}</p>
+                  <p className="border-b border-gray-300 w-full text-center p-1 bg-red-300">{budget.total_ausgaben}</p>
                   <p className="border-b border-gray-300 w-full text-center p-1 bg-gray-100">= {budget.total_umsatz}</p>
                 </div>
               </div>
