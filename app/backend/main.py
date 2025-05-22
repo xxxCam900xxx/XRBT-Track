@@ -3,6 +3,7 @@ from fastapi.responses import RedirectResponse
 from fastapi.middleware.cors import CORSMiddleware
 from router.budget import router as budget_router
 from router.month import router as month_router
+from router.booking import router as booking_router
 
 app = FastAPI()
 
@@ -29,3 +30,4 @@ async def read_root():
 # Router einbinden
 app.include_router(budget_router)
 app.include_router(month_router)
+app.include_router(booking_router)
