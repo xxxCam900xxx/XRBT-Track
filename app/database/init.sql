@@ -52,8 +52,8 @@ VALUES
 INSERT INTO 
     Buchung (monat_id, typ, titel, datum, betrag)
 VALUES 
-    (1, 'Einnahme', 'Einnahme A', '2025-01-01', 200),
-    (1, 'Einnahme', 'Einnahme B', '2025-01-02', 400),
-    (1, 'Ausgabe', 'Ausgabe A', '2025-01-03', -300),
-    (1, 'Einnahme', 'Einnahme C', '2025-01-04', 300),
-    (1, 'Ausgabe', 'Ausgabe B', '2025-01-05', -1000);
+    (1, 'einnahme', 'Einnahme A', '2025-01-01', 200),
+    (1, 'einnahme', 'Einnahme B', '2025-01-02', 400),
+    (1, 'ausgabe', 'Ausgabe A', '2025-01-03', -300),
+    (1, 'einnahme', 'Einnahme C', '2025-01-04', 300),
+    (1, 'ausgabe', 'Ausgabe B', '2025-01-05', -1000);
