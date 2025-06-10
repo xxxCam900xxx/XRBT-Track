@@ -75,25 +75,34 @@ function BudgetPlanView() {
             <section
                 className="w-1/3 flex flex-col h-full rounded-l-2xl overflow-auto bg-white"
             >
-                {data.map((month) => (
-                    <div
-                        key={month.monat_id}
-                        className="p-4 border-b border-gray-200 hover:bg-gray-100 cursor-pointer flex flex-row gap-5 items-center justify-between"
-                        onClick={() => navigateToMonth(month.monat_id)}
-                    >
-                        <div className='w-[200px]'>
-                            <h3 className="text-lg font-semibold">{month.monat_name}</h3>
-                            <p className="text-sm text-gray-600">
-                                {month.start_datum} – {month.end_datum}
-                            </p>
+                {data.map((month) => {
+
+                    const startitemDate = new Date(month.start_datum);
+                    const startformattedDate = startitemDate.toLocaleDateString("de-DE");
+
+                    const enditemDate = new Date(month.end_datum);
+                    const endformattedDate = enditemDate.toLocaleDateString("de-DE");
+
+                    return (
+                        <div
+                            key={month.monat_id}
+                            className="p-4 border-b border-gray-200 hover:bg-gray-100 cursor-pointer flex flex-row gap-5 items-center justify-between"
+                            onClick={() => navigateToMonth(month.monat_id)}
+                        >
+                            <div className='w-[200px]'>
+                                <h3 className="text-lg font-semibold">{month.monat_name}</h3>
+                                <p className="text-sm text-gray-600">
+                                    {startformattedDate} – {endformattedDate}
+                                </p>
+                            </div>
+                            <div className='w-1/3 text-center rounded-md overflow-hidden'>
+                                <p className="bg-green-300 text-sm">Einnahmen: {month.total_einnahmen} CHF</p>
+                                <p className="bg-red-300 text-sm">Ausgaben: {month.total_ausgaben} CHF</p>
+                                <p className="bg-gray-100 text-sm font-medium">Umsatz: {month.total_umsatz} CHF</p>
+                            </div>
                         </div>
-                        <div className='w-1/3 text-center rounded-md overflow-hidden'>
-                            <p className="bg-green-300 text-sm">Einnahmen: {month.total_einnahmen} CHF</p>
-                            <p className="bg-red-300 text-sm">Ausgaben: {month.total_ausgaben} CHF</p>
-                            <p className="bg-gray-100 text-sm font-medium">Umsatz: {month.total_umsatz} CHF</p>
-                        </div>
-                    </div>
-                ))}
+                    )
+                })}
             </section>
             <button
                 className='fixed top-5 left-5 bg-white text-md aspect-square w-[40px] rounded-xl cursor-pointer flex items-center justify-center'

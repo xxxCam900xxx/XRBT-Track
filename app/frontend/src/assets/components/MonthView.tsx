@@ -94,24 +94,30 @@ function MonthView() {
                             </tr>
                         </thead>
                         <tbody>
-                            {incomings.map((item, index) => (
-                                <tr key={index} className="bg-green-50">
-                                    <td className="px-6 py-4">{item.datum}</td>
-                                    <td className="px-6 py-4">{item.titel}</td>
-                                    <td className="px-6 py-4">{item.betrag}</td>
-                                    <td className="px-6 py-4 text-right">
-                                        <button
-                                            onClick={() => {
-                                                setBooking(item);
-                                                setDisplayNewBookingPopUp(true);
-                                            }}
-                                            className="font-medium text-blue-600 hover:underline"
-                                        >
-                                            Edit
-                                        </button>
-                                    </td>
-                                </tr>
-                            ))}
+                            {incomings.map((item, index) => {
+
+                                const itemDate = new Date(item.datum);
+                                const formattedDate = itemDate.toLocaleDateString("de-DE");
+
+                                return (
+                                    <tr key={index} className="bg-green-50">
+                                        <td className="px-6 py-4">{formattedDate}</td>
+                                        <td className="px-6 py-4">{item.titel}</td>
+                                        <td className="px-6 py-4">{item.betrag} CHF</td>
+                                        <td className="px-6 py-4 text-right">
+                                            <button
+                                                onClick={() => {
+                                                    setBooking(item);
+                                                    setDisplayNewBookingPopUp(true);
+                                                }}
+                                                className="font-medium text-blue-600 hover:underline"
+                                            >
+                                                Edit
+                                            </button>
+                                        </td>
+                                    </tr>
+                                )
+                            })}
                         </tbody>
                     </table>
                 </div>
@@ -134,9 +140,14 @@ function MonthView() {
                             </tr>
                         </thead>
                         <tbody>
-                            {outgoings.map((item, index) => (
+                            {outgoings.map((item, index) => {
+
+                                const itemDate = new Date(item.datum);
+                                const formattedDate = itemDate.toLocaleDateString("de-DE");
+                                
+                                return (
                                 <tr key={index} className="bg-red-50">
-                                    <td className="px-6 py-4">{item.datum}</td>
+                                    <td className="px-6 py-4">{formattedDate}</td>
                                     <td className="px-6 py-4">{item.titel}</td>
                                     <td className="px-6 py-4">{item.betrag}</td>
                                     <td className="px-6 py-4 text-right">
@@ -151,7 +162,7 @@ function MonthView() {
                                         </button>
                                     </td>
                                 </tr>
-                            ))}
+                            )})}
                         </tbody>
                     </table>
                 </div>
