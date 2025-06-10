@@ -46,7 +46,7 @@ class Buchung(Base):
     monat = relationship("Monat", back_populates="buchungen")
 
     __table_args__ = (
-        CheckConstraint("typ IN ('Einnahme', 'Ausgabe')", name='buchung_typ_check'),
+        CheckConstraint("typ IN ('einnahme', 'ausgabe')", name='buchung_typ_check'),
     )
 
 
@@ -60,5 +60,5 @@ class Template(Base):
     betrag = Column(Numeric(10, 2), nullable=False)
 
     __table_args__ = (
-        CheckConstraint("typ IN ('Einnahme', 'Ausgabe')", name='template_typ_check'),
+        CheckConstraint("typ IN ('einnahme', 'ausgabe')", name='template_typ_check'),
     )
