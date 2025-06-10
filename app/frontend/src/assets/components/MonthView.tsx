@@ -18,7 +18,7 @@ function MonthView() {
     };
 
     const fetchAllIncommings = () => {
-        fetch(`${backendUrl}/booking/einnahmen`)
+        fetch(`${backendUrl}/booking/${month_id}/einnahme`)
             .then((response) => {
                 if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
                 return response.json();
@@ -34,7 +34,7 @@ function MonthView() {
     };
 
     const fetchAllOutcommings = () => {
-        fetch(`${backendUrl}/month/ausgaben`)
+        fetch(`${backendUrl}/booking/${month_id}/ausgabe`)
             .then((response) => {
                 if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
                 return response.json();
