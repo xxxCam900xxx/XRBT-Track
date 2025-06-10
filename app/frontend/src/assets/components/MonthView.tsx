@@ -133,7 +133,7 @@ function MonthView() {
             <section className="w-2/3 flex flex-col justify-center items-center px-20 py-5 gap-5">
                 {/* Einnahmen */}
                 <div className='flex gap-5 w-full'>
-                    <div className="relative overflow-x-auto shadow-md sm:rounded-lg w-full">
+                    <div className="relative overflow-x-auto shadow-md sm:rounded-lg w-full h-fit">
                         <table className="w-full text-sm text-left rtl:text-right text-gray-500">
                             <caption className="p-5 text-lg font-semibold text-left rtl:text-right text-gray-900 bg-white">
                                 Einnahmen
@@ -183,7 +183,7 @@ function MonthView() {
                     </div>
 
                     {/* Ausgaben */}
-                    <div className="relative overflow-x-auto shadow-md sm:rounded-lg w-full">
+                    <div className="relative overflow-x-auto shadow-md sm:rounded-lg w-full h-fit">
                         <table className="w-full text-sm text-left rtl:text-right text-gray-500">
                             <caption className="p-5 text-lg font-semibold text-left rtl:text-right text-gray-900 bg-white">
                                 Ausgaben
