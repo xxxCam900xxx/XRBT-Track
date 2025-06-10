@@ -23,7 +23,7 @@ CREATE TABLE Monat (
 CREATE TABLE Buchung (
     buchung_id SERIAL PRIMARY KEY,
     monat_id INTEGER NOT NULL REFERENCES Monat(monat_id) ON DELETE CASCADE,
-    typ VARCHAR(10) CHECK (typ IN ('Einnahme', 'Ausgabe')) NOT NULL,
+    typ VARCHAR(10) CHECK (typ IN ('einnahme', 'ausgabe')) NOT NULL,
     titel TEXT NOT NULL,
     datum DATE NOT NULL,
     betrag NUMERIC(10, 2) NOT NULL
@@ -32,7 +32,7 @@ CREATE TABLE Buchung (
 -- Tabelle: Template
 CREATE TABLE Template (
     template_id SERIAL PRIMARY KEY,
-    typ VARCHAR(10) CHECK (typ IN ('Einnahme', 'Ausgabe')) NOT NULL,
+    typ VARCHAR(10) CHECK (typ IN ('einnahme', 'ausgabe')) NOT NULL,
     titel TEXT NOT NULL,
     datum DATE NOT NULL,
     betrag NUMERIC(10, 2) NOT NULL
