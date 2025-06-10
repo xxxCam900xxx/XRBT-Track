@@ -99,7 +99,7 @@ function BudgetSelectionView() {
         >
           Create
         </button>
-        <button className="shadow-xl px-5 py-2 h-fit bg-sky-300 rounded-md cursor-pointer text-white font-semibold">Credits</button>
+        <a href='/credits' className="shadow-xl px-5 py-2 h-fit bg-sky-300 rounded-md cursor-pointer text-white font-semibold">Credits</a>
       </section>
 
       <CreateNewBudgetPopUp
