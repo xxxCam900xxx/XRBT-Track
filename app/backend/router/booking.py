@@ -10,6 +10,7 @@ router = APIRouter(
 )
 
 class BookingModel(BaseModel):
+    buchung_id: str
     titel: str
     datum: str
     typ: str
@@ -26,4 +27,8 @@ async def get_All_Bookings_By_Type_And_Id(id, typ, db: AsyncSession = Depends(ge
 
 @router.post("/")
 async def add_New_Booking(body: BookingModel, db: AsyncSession = Depends(get_db)):
+    return await addNewBooking(body, db)
+
+@router.patch("/")
+async def add_Update_Booking(body: BookingModel, db: AsyncSession = Depends(get_db)):
     return await addNewBooking(body, db)
