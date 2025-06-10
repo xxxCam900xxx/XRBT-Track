@@ -1,9 +1,12 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { Booking } from "../types/booking";
 
 interface CreateNewBookingPopUpProps {
     displayNewBookingPopUp: boolean;
     setDisplayNewBookingPopUp: (value: boolean) => void;
     month_id: string;
+    setBooking: (value: Booking) => void;
+    booking: Booking;
     reload: () => void;
 }
 
@@ -11,16 +14,25 @@ const CreateNewBookingPopUp: React.FC<CreateNewBookingPopUpProps> = ({
     displayNewBookingPopUp: displayNewBudgetPopUp,
     setDisplayNewBookingPopUp: setDisplayNewBookingPopUp,
     month_id: month_id,
+    setBooking: setBooking,
+    booking: booking,
     reload: reload,
 }) => {
     const backendUrl = "http://localhost:8000"
-    const [formData, setFormData] = useState({ titel: "", datum: "", typ: "", betrag: "", monat_id: `${month_id}` });
+    const [formData, setFormData] = useState({ buchung_id: booking.buchung_id, titel: booking.titel, datum: booking.datum, typ: booking.typ, betrag: booking.betrag, monat_id: `${month_id}` });
 
     const createNewBooking = async () => {
         try {
 
+            let methodUsed = "POST";
+
+            if (booking.buchung_id != "") {
+                methodUsed = "PATCH";
+            }
+
             let processedBetrag = parseFloat(formData.betrag);
             if (isNaN(processedBetrag)) {
+                console.log(processedBetrag);
                 console.error("Invalid amount entered.");
                 return;
             }
@@ -33,17 +45,25 @@ const CreateNewBookingPopUp: React.FC<CreateNewBookingPopUpProps> = ({
             }
 
             const response = await fetch(`${backendUrl}/booking/`, {
-                method: "POST",
+                method: methodUsed,
                 headers: {
                     "Content-Type": "application/json"
                 },
-                body: JSON.stringify({ titel: formData.titel, datum: formData.datum, typ: formData.typ, betrag: processedBetrag, monat_id: `${month_id}` })
+                body: JSON.stringify({ buchung_id: `${booking.buchung_id}`, titel: formData.titel, datum: formData.datum, typ: formData.typ, betrag: processedBetrag, monat_id: `${month_id}` })
             });
 
             if (response.ok) {
                 const data = await response.json();
                 console.log("Budget created:", data);
                 setDisplayNewBookingPopUp(false);
+                setBooking({
+                    buchung_id: "",
+                    titel: "",
+                    datum: "",
+                    betrag: "",
+                    typ: "",
+                    monat_id: month_id
+                });
                 reload();
             } else {
                 console.error("Failed to create budget");
@@ -52,6 +72,18 @@ const CreateNewBookingPopUp: React.FC<CreateNewBookingPopUpProps> = ({
             console.error("Error:", error);
         }
     };
+
+    useEffect(() => {
+        setFormData({
+            buchung_id: booking.buchung_id,
+            titel: booking.titel,
+            datum: booking.datum,
+            typ: booking.typ,
+            betrag: booking.betrag,
+            monat_id: `${month_id}`,
+        });
+    }, [booking, month_id]);
+
 
     if (!displayNewBudgetPopUp) return null;
 
@@ -83,7 +115,7 @@ const CreateNewBookingPopUp: React.FC<CreateNewBookingPopUpProps> = ({
                             name='date'
                             id='date'
                             className='border rounded-md p-2'
-                            value={formData.datum}
+                            value={formData.datum || booking.datum}
                             onChange={(e) => setFormData({ ...formData, datum: e.target.value })}
                             autoFocus
                         />
@@ -94,7 +126,7 @@ const CreateNewBookingPopUp: React.FC<CreateNewBookingPopUpProps> = ({
                             name="typ"
                             id="typ"
                             className='border rounded-md p-2'
-                            value={formData.typ}
+                            value={formData.typ || booking.typ}
                             onChange={(e) => setFormData({ ...formData, typ: e.target.value })}
                         >
                             <option value="" disabled></option>
@@ -109,7 +141,7 @@ const CreateNewBookingPopUp: React.FC<CreateNewBookingPopUpProps> = ({
                             name='title'
                             id='title'
                             className='border rounded-md p-2'
-                            value={formData.titel}
+                            value={formData.titel || booking.titel}
                             onChange={(e) => setFormData({ ...formData, titel: e.target.value })}
                         />
                     </div>
@@ -120,7 +152,7 @@ const CreateNewBookingPopUp: React.FC<CreateNewBookingPopUpProps> = ({
                             name='amount'
                             id='amount'
                             className='border rounded-md p-2'
-                            value={formData.betrag}
+                            value={formData.betrag || booking.betrag}
                             onChange={(e) => setFormData({ ...formData, betrag: e.target.value })}
                         />
                     </div>

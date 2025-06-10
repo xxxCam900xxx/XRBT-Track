@@ -11,6 +11,14 @@ function MonthView() {
 
     const [incomings, setIncomings] = useState<Booking[]>([]);
     const [outgoings, setOutgoings] = useState<Booking[]>([]);
+    const [booking, setBooking] = useState<Booking>({
+        buchung_id: "",
+        titel: "",
+        datum: "",
+        betrag: "",
+        typ: "",
+        monat_id: month_id,
+    });
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [displayNewBookingPopUp, setDisplayNewBookingPopUp] = useState<boolean>(false);
@@ -92,7 +100,15 @@ function MonthView() {
                                     <td className="px-6 py-4">{item.titel}</td>
                                     <td className="px-6 py-4">{item.betrag}</td>
                                     <td className="px-6 py-4 text-right">
-                                        <a href="#" className="font-medium text-blue-600 hover:underline">Edit</a>
+                                        <button
+                                            onClick={() => {
+                                                setBooking(item);
+                                                setDisplayNewBookingPopUp(true);
+                                            }}
+                                            className="font-medium text-blue-600 hover:underline"
+                                        >
+                                            Edit
+                                        </button>
                                     </td>
                                 </tr>
                             ))}
@@ -124,7 +140,15 @@ function MonthView() {
                                     <td className="px-6 py-4">{item.titel}</td>
                                     <td className="px-6 py-4">{item.betrag}</td>
                                     <td className="px-6 py-4 text-right">
-                                        <a href="#" className="font-medium text-blue-600 hover:underline">Edit</a>
+                                        <button
+                                            onClick={() => {
+                                                setBooking(item);
+                                                setDisplayNewBookingPopUp(true);
+                                            }}
+                                            className="font-medium text-blue-600 hover:underline"
+                                        >
+                                            Edit
+                                        </button>
                                     </td>
                                 </tr>
                             ))}
@@ -157,6 +181,8 @@ function MonthView() {
                 displayNewBookingPopUp={displayNewBookingPopUp}
                 setDisplayNewBookingPopUp={setDisplayNewBookingPopUp}
                 month_id={month_id}
+                setBooking={setBooking}
+                booking={booking}
                 reload={fetchAllBookings}
             />
         </main>
