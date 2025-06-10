@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Booking } from '../types/booking';
+import CreateNewBookingPopUp from '../widgets/CreateNewBookingPopUp';
 
 function MonthView() {
     const location = useLocation();
@@ -12,6 +13,7 @@ function MonthView() {
     const [outgoings, setOutgoings] = useState<Booking[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [displayNewBookingPopUp, setDisplayNewBookingPopUp] = useState<boolean>(false);
 
     const goBack = () => {
         navigate(-1);
@@ -49,12 +51,16 @@ function MonthView() {
             });
     };
 
+    const fetchAllBookings = () => {
+        fetchAllIncommings();
+        fetchAllOutcommings();
+    }
+
     useEffect(() => {
         if (!month_id) {
             navigate("/");
         } else {
-            fetchAllIncommings();
-            fetchAllOutcommings();
+            fetchAllBookings();
         }
     }, [month_id]);
 
@@ -128,8 +134,15 @@ function MonthView() {
             </section>
 
             {/* Monate Navigation oder Detailanzeige */}
-            <section className="w-1/3 flex flex-col h-full rounded-l-2xl overflow-auto bg-white">
+            <section className="w-1/3 flex flex-col gap-10 items-center justify-between h-full rounded-l-2xl overflow-auto bg-white p-5">
                 {/* Platz für weitere Inhalte */}
+                <h1 className='text-4xl font-bold'>Statisik des Monats</h1>
+                <button
+                    className="shadow-xl px-5 h-fit w-3/5 py-2 bg-sky-300 rounded-md cursor-pointer text-white font-semibold"
+                    onClick={() => setDisplayNewBookingPopUp(true)}
+                >
+                    Neue Buchung hinzufügen
+                </button>
             </section>
 
             {/* Zurück-Button */}
@@ -139,6 +152,13 @@ function MonthView() {
             >
                 <i className="fa-solid fa-xmark text-sky-400 text-2xl"></i>
             </button>
+
+            <CreateNewBookingPopUp
+                displayNewBookingPopUp={displayNewBookingPopUp}
+                setDisplayNewBookingPopUp={setDisplayNewBookingPopUp}
+                month_id={month_id}
+                reload={fetchAllBookings}
+            />
         </main>
     );
 }
