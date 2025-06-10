@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Booking } from '../types/booking';
 import CreateNewBookingPopUp from '../widgets/CreateNewBookingPopUp';
@@ -11,170 +11,249 @@ function MonthView() {
 
     const [incomings, setIncomings] = useState<Booking[]>([]);
     const [outgoings, setOutgoings] = useState<Booking[]>([]);
-    const [booking, setBooking] = useState<Booking>({
-        buchung_id: "",
-        titel: "",
-        datum: "",
-        betrag: "",
-        typ: "",
-        monat_id: month_id,
-    });
+    const [totalIncomes, setTotalIncomes] = useState<number>(0);
+    const [totalOutgoings, setTotalOutgoings] = useState<number>(0);
+    const [currentBooking, setCurrentBooking] = useState<Booking | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [displayNewBookingPopUp, setDisplayNewBookingPopUp] = useState<boolean>(false);
 
-    const goBack = () => {
+    const goBack = useCallback(() => {
         navigate(-1);
-    };
+    }, [navigate]);
 
-    const fetchAllIncommings = () => {
-        fetch(`${backendUrl}/booking/${month_id}/einnahme`)
-            .then((response) => {
-                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-                return response.json();
-            })
-            .then((data: Booking[]) => {
-                setIncomings(data);
-                setLoading(false);
-            })
-            .catch((err) => {
-                setError(err.message);
-                setLoading(false);
+    const fetchBookings = useCallback(async (type: 'einnahme' | 'ausgabe') => {
+        try {
+            const response = await fetch(`${backendUrl}/booking/${month_id}/${type}`);
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            const data: Booking[] = await response.json();
+            return data;
+        } catch (err: any) {
+            console.error(`Error fetching ${type}s:`, err);
+            setError(err.message);
+            return [];
+        }
+    }, [backendUrl, month_id]);
+
+    const fetchAndCalculateTotals = useCallback(async () => {
+        if (!month_id) {
+            console.warn("month_id is not available, cannot fetch bookings.");
+            setLoading(false);
+            return;
+        }
+
+        setLoading(true);
+        setError(null);
+
+        try {
+            const fetchedIncomings = await fetchBookings('einnahme');
+            const fetchedOutgoings = await fetchBookings('ausgabe');
+
+            setIncomings(fetchedIncomings);
+            setOutgoings(fetchedOutgoings);
+
+            const calculatedTotalIncomes = fetchedIncomings.reduce((sum, item) => sum + parseFloat(item.betrag || '0'), 0);
+            const calculatedTotalOutgoings = fetchedOutgoings.reduce((sum, item) => sum + parseFloat(item.betrag || '0'), 0);
+
+            setTotalIncomes(calculatedTotalIncomes);
+            setTotalOutgoings(calculatedTotalOutgoings);
+
+            const response = await fetch(`${backendUrl}/month/info/${month_id}`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    total_einnahmen: calculatedTotalIncomes,
+                    total_ausgaben: calculatedTotalOutgoings,
+                })
             });
-    };
 
-    const fetchAllOutcommings = () => {
-        fetch(`${backendUrl}/booking/${month_id}/ausgabe`)
-            .then((response) => {
-                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-                return response.json();
-            })
-            .then((data: Booking[]) => {
-                setOutgoings(data);
-                setLoading(false);
-            })
-            .catch((err) => {
-                setError(err.message);
-                setLoading(false);
-            });
-    };
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
 
-    const fetchAllBookings = () => {
-        fetchAllIncommings();
-        fetchAllOutcommings();
-    }
+            console.log("Monatsstatistik erfolgreich aktualisiert.");
+        } catch (err: any) {
+            console.error("Fehler beim Aktualisieren der Monatsstatistik:", err);
+            setError(err.message);
+        } finally {
+            setLoading(false);
+        }
+    }, [month_id, fetchBookings, backendUrl]);
 
     useEffect(() => {
         if (!month_id) {
             navigate("/");
-        } else {
-            fetchAllBookings();
+            return;
         }
-    }, [month_id]);
+        fetchAndCalculateTotals();
+    }, [month_id, navigate, fetchAndCalculateTotals]);
+
+    const handleAddBookingClick = () => {
+        setCurrentBooking({
+            buchung_id: "",
+            titel: "",
+            datum: "",
+            betrag: "",
+            typ: "",
+            monat_id: month_id,
+        });
+        setDisplayNewBookingPopUp(true);
+    };
+
+    const handleEditBookingClick = (bookingToEdit: Booking) => {
+        setCurrentBooking(bookingToEdit);
+        setDisplayNewBookingPopUp(true);
+    };
+
+    const handleBookingCreatedOrUpdated = () => {
+        setDisplayNewBookingPopUp(false);
+        fetchAndCalculateTotals();
+    };
+
+    const handleClosePopUp = () => {
+        setDisplayNewBookingPopUp(false);
+        setCurrentBooking(null);
+    };
+
+    if (loading) {
+        return <div className="flex justify-center items-center h-screen text-lg">Loading...</div>;
+    }
+
+    if (error) {
+        return <div className="flex justify-center items-center h-screen text-lg text-red-600">Error: {error}</div>;
+    }
 
     return (
         <main className="flex flex-row h-full w-full bg-sky-300">
             {/* Dashboard */}
-            <section className="w-2/3 flex justify-center items-center px-20 py-5 gap-5">
+            <section className="w-2/3 flex flex-col justify-center items-center px-20 py-5 gap-5">
                 {/* Einnahmen */}
-                <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
-                    <table className="w-full text-sm text-left rtl:text-right text-gray-500">
-                        <caption className="p-5 text-lg font-semibold text-left rtl:text-right text-gray-900 bg-white">
-                            Einnahmen
-                            <p className="mt-1 text-sm font-normal text-gray-500">
-                                Diese Liste beinhalten alle Einnahmen diesen Monats
-                            </p>
-                        </caption>
-                        <thead className="text-xs text-gray-700 uppercase bg-green-100">
-                            <tr>
-                                <th className="px-6 py-3">Datum</th>
-                                <th className="px-6 py-3">Titel</th>
-                                <th className="px-6 py-3">Betrag</th>
-                                <th className="px-6 py-3"><span className="sr-only">Edit</span></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {incomings.map((item, index) => {
+                <div className='flex gap-5 w-full'>
+                    <div className="relative overflow-x-auto shadow-md sm:rounded-lg w-full">
+                        <table className="w-full text-sm text-left rtl:text-right text-gray-500">
+                            <caption className="p-5 text-lg font-semibold text-left rtl:text-right text-gray-900 bg-white">
+                                Einnahmen
+                                <p className="mt-1 text-sm font-normal text-gray-500">
+                                    Diese Liste beinhaltet alle Einnahmen diesen Monats
+                                </p>
+                            </caption>
+                            <thead className="text-xs text-gray-700 uppercase bg-green-100">
+                                <tr>
+                                    <th className="px-6 py-3">Datum</th>
+                                    <th className="px-6 py-3">Titel</th>
+                                    <th className="px-6 py-3">Betrag</th>
+                                    <th className="px-6 py-3"><span className="sr-only">Edit</span></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {incomings.length > 0 ? (
+                                    incomings.map((item, index) => {
+                                        const itemDate = new Date(item.datum);
+                                        const formattedDate = itemDate.toLocaleDateString("de-DE");
 
-                                const itemDate = new Date(item.datum);
-                                const formattedDate = itemDate.toLocaleDateString("de-DE");
-
-                                return (
-                                    <tr key={index} className="bg-green-50">
-                                        <td className="px-6 py-4">{formattedDate}</td>
-                                        <td className="px-6 py-4">{item.titel}</td>
-                                        <td className="px-6 py-4">{item.betrag} CHF</td>
-                                        <td className="px-6 py-4 text-right">
-                                            <button
-                                                onClick={() => {
-                                                    setBooking(item);
-                                                    setDisplayNewBookingPopUp(true);
-                                                }}
-                                                className="font-medium text-blue-600 hover:underline"
-                                            >
-                                                Edit
-                                            </button>
+                                        return (
+                                            <tr key={item.buchung_id || index} className="bg-green-50">
+                                                <td className="px-6 py-4">{formattedDate}</td>
+                                                <td className="px-6 py-4">{item.titel}</td>
+                                                <td className="px-6 py-4">{parseFloat(item.betrag).toFixed(2)} CHF</td>
+                                                <td className="px-6 py-4 text-right">
+                                                    <button
+                                                        onClick={() => handleEditBookingClick(item)}
+                                                        className="font-medium text-blue-600 hover:underline"
+                                                    >
+                                                        Edit
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        );
+                                    })
+                                ) : (
+                                    <tr>
+                                        <td colSpan={4} className="px-6 py-4 text-center text-gray-500">
+                                            Keine Einnahmen vorhanden.
                                         </td>
                                     </tr>
-                                )
-                            })}
-                        </tbody>
-                    </table>
-                </div>
+                                )}
+                            </tbody>
+                        </table>
+                    </div>
 
-                {/* Ausgaben */}
-                <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
-                    <table className="w-full text-sm text-left rtl:text-right text-gray-500">
-                        <caption className="p-5 text-lg font-semibold text-left rtl:text-right text-gray-900 bg-white">
-                            Ausgaben
-                            <p className="mt-1 text-sm font-normal text-gray-500">
-                                Diese Liste beinhalten alle Ausgaben diesen Monats
-                            </p>
-                        </caption>
-                        <thead className="text-xs text-gray-700 uppercase bg-red-100">
-                            <tr>
-                                <th className="px-6 py-3">Datum</th>
-                                <th className="px-6 py-3">Titel</th>
-                                <th className="px-6 py-3">Betrag</th>
-                                <th className="px-6 py-3"><span className="sr-only">Edit</span></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {outgoings.map((item, index) => {
-
-                                const itemDate = new Date(item.datum);
-                                const formattedDate = itemDate.toLocaleDateString("de-DE");
-                                
-                                return (
-                                <tr key={index} className="bg-red-50">
-                                    <td className="px-6 py-4">{formattedDate}</td>
-                                    <td className="px-6 py-4">{item.titel}</td>
-                                    <td className="px-6 py-4">{item.betrag}</td>
-                                    <td className="px-6 py-4 text-right">
-                                        <button
-                                            onClick={() => {
-                                                setBooking(item);
-                                                setDisplayNewBookingPopUp(true);
-                                            }}
-                                            className="font-medium text-blue-600 hover:underline"
-                                        >
-                                            Edit
-                                        </button>
-                                    </td>
+                    {/* Ausgaben */}
+                    <div className="relative overflow-x-auto shadow-md sm:rounded-lg w-full">
+                        <table className="w-full text-sm text-left rtl:text-right text-gray-500">
+                            <caption className="p-5 text-lg font-semibold text-left rtl:text-right text-gray-900 bg-white">
+                                Ausgaben
+                                <p className="mt-1 text-sm font-normal text-gray-500">
+                                    Diese Liste beinhaltet alle Ausgaben diesen Monats
+                                </p>
+                            </caption>
+                            <thead className="text-xs text-gray-700 uppercase bg-red-100">
+                                <tr>
+                                    <th className="px-6 py-3">Datum</th>
+                                    <th className="px-6 py-3">Titel</th>
+                                    <th className="px-6 py-3">Betrag</th>
+                                    <th className="px-6 py-3"><span className="sr-only">Edit</span></th>
                                 </tr>
-                            )})}
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                                {outgoings.length > 0 ? (
+                                    outgoings.map((item, index) => {
+                                        const itemDate = new Date(item.datum);
+                                        const formattedDate = itemDate.toLocaleDateString("de-DE");
+
+                                        return (
+                                            <tr key={item.buchung_id || index} className="bg-red-50">
+                                                <td className="px-6 py-4">{formattedDate}</td>
+                                                <td className="px-6 py-4">{item.titel}</td>
+                                                <td className="px-6 py-4">{parseFloat(item.betrag).toFixed(2)} CHF</td>
+                                                <td className="px-6 py-4 text-right">
+                                                    <button
+                                                        onClick={() => handleEditBookingClick(item)}
+                                                        className="font-medium text-blue-600 hover:underline"
+                                                    >
+                                                        Edit
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        );
+                                    })
+                                ) : (
+                                    <tr>
+                                        <td colSpan={4} className="px-6 py-4 text-center text-gray-500">
+                                            Keine Ausgaben vorhanden.
+                                        </td>
+                                    </tr>
+                                )}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
+                <div className='flex gap-5 w-full'>
+                    <div className='flex gap-2 w-full shadow-md sm:rounded-lg bg-green-100 p-5'>
+                        <p className="mt-1 text-xl font-bold text-gray-700">
+                            Total Einnahmen: {totalIncomes.toFixed(2)} CHF
+                        </p>
+                    </div>
+                    <div className='flex gap-2 w-full shadow-md sm:rounded-lg bg-red-100 p-5'>
+                        <p className="mt-1 text-xl font-bold text-gray-700">
+                            Total Ausgaben: {totalOutgoings.toFixed(2)} CHF
+                        </p>
+                    </div>
+                </div>
+
             </section>
 
             {/* Monate Navigation oder Detailanzeige */}
             <section className="w-1/3 flex flex-col gap-10 items-center justify-between h-full rounded-l-2xl overflow-auto bg-white p-5">
                 {/* Platz für weitere Inhalte */}
-                <h1 className='text-4xl font-bold'>Statisik des Monats</h1>
+                <h1 className='text-4xl font-bold'>Statistik des Monats</h1>
                 <button
                     className="shadow-xl px-5 h-fit w-3/5 py-2 bg-sky-300 rounded-md cursor-pointer text-white font-semibold"
-                    onClick={() => setDisplayNewBookingPopUp(true)}
+                    onClick={handleAddBookingClick}
                 >
                     Neue Buchung hinzufügen
                 </button>
@@ -188,14 +267,16 @@ function MonthView() {
                 <i className="fa-solid fa-xmark text-sky-400 text-2xl"></i>
             </button>
 
-            <CreateNewBookingPopUp
-                displayNewBookingPopUp={displayNewBookingPopUp}
-                setDisplayNewBookingPopUp={setDisplayNewBookingPopUp}
-                month_id={month_id}
-                setBooking={setBooking}
-                booking={booking}
-                reload={fetchAllBookings}
-            />
+            {displayNewBookingPopUp && (
+                <CreateNewBookingPopUp
+                    displayNewBookingPopUp={displayNewBookingPopUp}
+                    setDisplayNewBookingPopUp={handleClosePopUp}
+                    month_id={month_id}
+                    setBooking={setCurrentBooking}
+                    booking={currentBooking as Booking}
+                    reload={handleBookingCreatedOrUpdated}
+                />
+            )}
         </main>
     );
 }
