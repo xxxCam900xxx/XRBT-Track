@@ -17,8 +17,8 @@ async def getAllMonthsByID(id, db: AsyncSession):
 
 async def updateMonthsByID(id, body, db: AsyncSession):
     update_stmt =  update(Monat).where(Monat.monat_id == int(id)).values(
-        total_ausgaben=int(body.total_ausgaben),
-        total_einnahmen=int(body.total_einnahmen)
+        total_ausgaben=float(body.total_ausgaben),
+        total_einnahmen=float(body.total_einnahmen)
     )
     await db.execute(update_stmt)
     await db.commit()

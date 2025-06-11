@@ -3,6 +3,7 @@ from datetime import date, datetime
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from sqlalchemy import delete, insert
+from sqlalchemy import update
 from database.models import Budget, Monat
 
 MONTH_NAMES = [
@@ -45,3 +46,11 @@ async def deleteBudgetById(id: int, db: AsyncSession):
     await db.commit()
     return
     
+async def updateBudgetById(id: int, body, db: AsyncSession):
+    updateStmt = update(Budget).where(Budget.budget_id == int(id)).values(
+        total_einnahmen=body.total_einnahmen,
+        total_ausgaben=body.total_ausgaben,
+    )
+    await db.execute(updateStmt)
+    await db.commit()
+    return
