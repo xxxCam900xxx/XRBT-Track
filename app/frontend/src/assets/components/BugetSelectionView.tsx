@@ -8,23 +8,46 @@ function BudgetSelectionView() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [displayNewBudgetPopUp, setDisplayNewBudgetPopUp] = useState<boolean>(false);
-  const backendUrl = "http://localhost:8000"
+  const [totalIncomes, setTotalIncomes] = useState(0);
+  const [totalOutgoings, setTotalOutgoings] = useState(0);
+  const [total, setTotal] = useState(0);
+  const backendUrl = "http://localhost:8000";
   const navigate = useNavigate();
 
-  const fetchBudgets = () => {
-    fetch(`${backendUrl}/budget/`)
-      .then((response) => {
-        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-        return response.json();
-      })
-      .then((data: Budget[]) => {
-        setData(data);
-        setLoading(false);
-      })
-      .catch((err) => {
-        setError(err.message);
-        setLoading(false);
-      });
+  const fetchBudgets = async (): Promise<Budget[]> => {
+    try {
+      const response = await fetch(`${backendUrl}/budget/`);
+      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+      const data: Budget[] = await response.json();
+      setData(data);
+      return data;
+    } catch (err: any) {
+      setError(err.message);
+      return [];
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const CalculateTotals = async () => {
+    setLoading(true);
+    setError(null);
+
+    const fetchedMonths = await fetchBudgets();
+
+    const calculatedTotalIncomes = fetchedMonths.reduce(
+      (sum, item) => sum + parseFloat(item.total_einnahmen || '0'),
+      0
+    );
+    const calculatedTotalOutgoings = fetchedMonths.reduce(
+      (sum, item) => sum + parseFloat(item.total_ausgaben || '0'),
+      0
+    );
+
+    setTotalIncomes(calculatedTotalIncomes);
+    setTotalOutgoings(calculatedTotalOutgoings);
+    setTotal(calculatedTotalIncomes + calculatedTotalOutgoings)
+
   }
 
   const deleteBudgetById = (id: string) => {
@@ -50,6 +73,7 @@ function BudgetSelectionView() {
 
   useEffect(() => {
     fetchBudgets();
+    CalculateTotals();
   }, []);
 
   if (loading) return <p>Loading...</p>;
@@ -59,8 +83,23 @@ function BudgetSelectionView() {
     <main className="flex flex-row h-full w-full bg-sky-300">
       {/* Dashboard Section */}
       <section
-        className="w-2/3 flex justify-center items-center p-5"
+        className="w-2/3 flex flex-col justify-center items-center p-5 gap-5"
       >
+        <h1 className='text-white text-4xl'>Statistic Coming Soon...</h1>
+        <div className='flex gap-5'>
+          <div className='shadow-xl flex flex-col items-center bg-green-100 rounded-md py-2 px-5'>
+            <h2>Totale Einnahen</h2>
+            <p>{totalIncomes}</p>
+          </div>
+          <div className='shadow-xl flex flex-col items-center bg-red-100 rounded-md py-2 px-5'>
+            <h2>Totale Ausgaben</h2>
+            <p>{totalOutgoings}</p>
+          </div>
+          <div className='shadow-xl flex flex-col items-center bg-white rounded-md py-2 px-5'>
+            <h2>Totaler Umsatz</h2>
+            <p>{total}</p>
+          </div>
+        </div>
       </section>
       {/* Folder Selection Section */}
       <section
