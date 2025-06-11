@@ -173,7 +173,7 @@ function MonthView() {
                                     })
                                 ) : (
                                     <tr>
-                                        <td colSpan={4} className="px-6 py-4 text-center text-gray-500">
+                                        <td colSpan={4} className="px-6 py-4 text-center text-gray-500 bg-green-50">
                                             Keine Einnahmen vorhanden.
                                         </td>
                                     </tr>
@@ -223,7 +223,7 @@ function MonthView() {
                                     })
                                 ) : (
                                     <tr>
-                                        <td colSpan={4} className="px-6 py-4 text-center text-gray-500">
+                                        <td colSpan={4} className="px-6 py-4 text-center text-gray-500 bg-red-50">
                                             Keine Ausgaben vorhanden.
                                         </td>
                                     </tr>
@@ -248,11 +248,27 @@ function MonthView() {
             </section>
 
             {/* Monate Navigation oder Detailanzeige */}
-            <section className="w-1/3 flex flex-col gap-10 items-center justify-between h-full rounded-l-2xl overflow-auto bg-white p-5">
+            <section className="w-1/3 flex flex-col justify-between gap-10 items-center h-full rounded-l-2xl overflow-auto bg-white p-5">
                 {/* Platz für weitere Inhalte */}
-                <h1 className='text-4xl font-bold'>Statistik des Monats</h1>
+                <div className='flex flex-col gap-5 w-full'>
+                    <h1 className='text-4xl font-bold'>Statistik des Monats</h1>
+                    {/* Umsatz anzeige */}
+                    <div>
+                        <h2>Umsatz:</h2>
+                        <p>
+                            {(totalIncomes + totalOutgoings).toFixed(2)}
+                        </p>
+                    </div>
+                    {/* Spezifische Suche */}
+
+                    {/* Kategorische Ausgaben */}
+
+                    {/* Visuelle Statisik Verlauf im Monat */}
+
+                    {/* Visuelle Statisik prozentualer Kuchen */}
+                </div>
                 <button
-                    className="shadow-xl px-5 h-fit w-3/5 py-2 bg-sky-300 rounded-md cursor-pointer text-white font-semibold"
+                    className="shadow-xl px-5 h-fit w-3/5 py-2 bg-sky-300 rounded-md  cursor-pointer text-white font-semibold"
                     onClick={handleAddBookingClick}
                 >
                     Neue Buchung hinzufügen

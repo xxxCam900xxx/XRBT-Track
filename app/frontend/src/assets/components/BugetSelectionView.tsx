@@ -56,57 +56,67 @@ function BudgetSelectionView() {
   if (error) return <p>Error: {error}</p>;
 
   return (
-    <>
-      {/* Budget Folder List */}
-      <section className="w-full h-full max-h-full overflow-y-auto flex flex-col p-5 gap-5">
-        {data.map((budget) => (
-          <div
-            key={budget.budget_id}
-            className="border-gray-200 border flex flex-row items-center justify-between p-5 rounded-xl relative gap-5 cursor-pointer shadow-lg"
-            onClick={() => handleClickBudgetPlan(budget.budget_id, budget.titel)}
-          >
-            <div className="flex flex-col w-full gap-2">
-              <h1 className="text-2xl font-semibold">{budget.titel}</h1>
-              <div className="flex flex-col justify-center w-full items-center rounded-lg overflow-hidden">
-                <div className="flex flex-row justify-around w-full">
-                  <p className="border-b border-gray-300 w-full text-center p-1 bg-green-300">{budget.total_einnahmen}</p>
-                  <p className="border-b border-gray-300 w-full text-center p-1 bg-red-300">{budget.total_ausgaben}</p>
-                  <p className="border-b border-gray-300 w-full text-center p-1 bg-gray-100">= {budget.total_umsatz}</p>
+    <main className="flex flex-row h-full w-full bg-sky-300">
+      {/* Dashboard Section */}
+      <section
+        className="w-2/3 flex justify-center items-center p-5"
+      >
+      </section>
+      {/* Folder Selection Section */}
+      <section
+        className="w-1/3 flex flex-col h-full rounded-l-2xl overflow-hidden bg-white"
+      >
+        {/* Budget Folder List */}
+        <section className="w-full h-full max-h-full overflow-y-auto flex flex-col p-5 gap-5">
+          {data.map((budget) => (
+            <div
+              key={budget.budget_id}
+              className="border-gray-200 border flex flex-row items-center justify-between p-5 rounded-xl relative gap-5 cursor-pointer shadow-lg"
+              onClick={() => handleClickBudgetPlan(budget.budget_id, budget.titel)}
+            >
+              <div className="flex flex-col w-full gap-2">
+                <h1 className="text-2xl font-semibold">{budget.titel}</h1>
+                <div className="flex flex-col justify-center w-full items-center rounded-lg overflow-hidden">
+                  <div className="flex flex-row justify-around w-full">
+                    <p className="border-b border-gray-300 w-full text-center p-1 bg-green-300">{budget.total_einnahmen}</p>
+                    <p className="border-b border-gray-300 w-full text-center p-1 bg-red-300">{budget.total_ausgaben}</p>
+                    <p className="border-b border-gray-300 w-full text-center p-1 bg-gray-100">= {budget.total_umsatz}</p>
+                  </div>
                 </div>
               </div>
+              <div className="flex h-full items-start">
+                <button
+                  className="bg-sky-400 text-md aspect-square w-[40px] rounded-xl cursor-pointer"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    deleteBudgetById(budget.budget_id);
+                  }}
+                >
+                  <i className="fa-solid fa-trash text-white"></i>
+                </button>
+              </div>
             </div>
-            <div className="flex h-full items-start">
-              <button
-                className="bg-sky-400 text-md aspect-square w-[40px] rounded-xl cursor-pointer"
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  deleteBudgetById(budget.budget_id);
-                }}
-              >
-                <i className="fa-solid fa-trash text-white"></i>
-              </button>
-            </div>
-          </div>
-        ))}
-      </section>
+          ))}
+        </section>
 
-      {/* Tools */}
-      <section className="w-full h-[100px] p-5 flex flex-row gap-5 items-center justify-center">
-        <button
-          className="shadow-xl px-5 h-fit w-3/5 py-2 bg-sky-300 rounded-md cursor-pointer text-white font-semibold"
-          onClick={() => setDisplayNewBudgetPopUp(true)}
-        >
-          Create
-        </button>
-        <a href='/credits' className="shadow-xl px-5 py-2 h-fit bg-sky-300 rounded-md cursor-pointer text-white font-semibold">Credits</a>
-      </section>
+        {/* Tools */}
+        <section className="w-full h-[100px] p-5 flex flex-row gap-5 items-center justify-center">
+          <button
+            className="shadow-xl px-5 h-fit w-3/5 py-2 bg-sky-300 rounded-md cursor-pointer text-white font-semibold"
+            onClick={() => setDisplayNewBudgetPopUp(true)}
+          >
+            Create
+          </button>
+          <a href='/credits' className="shadow-xl px-5 py-2 h-fit bg-sky-300 rounded-md cursor-pointer text-white font-semibold">Credits</a>
+        </section>
 
-      <CreateNewBudgetPopUp
-        displayNewBudgetPopUp={displayNewBudgetPopUp}
-        setDisplayNewBudgetPopUp={setDisplayNewBudgetPopUp}
-      />
-    </>
+        <CreateNewBudgetPopUp
+          displayNewBudgetPopUp={displayNewBudgetPopUp}
+          setDisplayNewBudgetPopUp={setDisplayNewBudgetPopUp}
+        />
+      </section>
+    </main>
   );
 }
 

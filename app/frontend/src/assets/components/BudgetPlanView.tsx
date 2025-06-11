@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Month } from '../types/month';
 
@@ -10,6 +10,9 @@ function BudgetPlanView() {
     const [data, setData] = useState<Month[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [totalIncomes, setTotalIncomes] = useState(0);
+    const [totalOutgoings, setTotalOutgoings] = useState(0);
+    const [total, setTotal] = useState(0);
     const backendUrl = "http://localhost:8000"
     const navigate = useNavigate();
 
@@ -23,39 +26,74 @@ function BudgetPlanView() {
         })
     }
 
-    const fetchBudgets = () => {
-        fetch(`${backendUrl}/month/${budget_id}`)
-            .then((response) => {
-                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-                return response.json();
-            })
-            .then((data: Month[]) => {
-                setData(data);
-                setLoading(false);
-            })
-            .catch((err) => {
-                setError(err.message);
-                setLoading(false);
-            });
-    }
+    const fetchBudgets = async (): Promise<Month[]> => {
+        try {
+            const response = await fetch(`${backendUrl}/month/${budget_id}`);
+            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+            const data: Month[] = await response.json();
+            setData(data);
+            return data;
+        } catch (err: any) {
+            setError(err.message);
+            return [];
+        } finally {
+            setLoading(false);
+        }
+    };
 
-    const deleteMonthbyID = (id: string) => {
-        fetch(`${backendUrl}/month/${id}`, {
-            method: "DELETE"
-        })
-            .then((response) => {
-                if (response.ok) {
-                    fetchBudgets();
-                }
-            })
-            .catch((err) => {
-                setError(err.message);
-                setLoading(false);
+    const fetchAndCalculateTotals = useCallback(async () => {
+        if (!budget_id) {
+            console.warn("budget_id is not available, cannot fetch bookings.");
+            setLoading(false);
+            return;
+        }
+
+        setLoading(true);
+        setError(null);
+
+        try {
+            const fetchedMonths = await fetchBudgets();
+
+            const calculatedTotalIncomes = fetchedMonths.reduce(
+                (sum, item) => sum + parseFloat(item.total_einnahmen || '0'),
+                0
+            );
+            const calculatedTotalOutgoings = fetchedMonths.reduce(
+                (sum, item) => sum + parseFloat(item.total_ausgaben || '0'),
+                0
+            );
+
+            setTotalIncomes(calculatedTotalIncomes);
+            setTotalOutgoings(calculatedTotalOutgoings);
+            setTotal(calculatedTotalIncomes + calculatedTotalOutgoings)
+
+            const response = await fetch(`${backendUrl}/budget/${budget_id}`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    total_einnahmen: calculatedTotalIncomes,
+                    total_ausgaben: calculatedTotalOutgoings,
+                })
             });
-    }
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+
+            console.log("Budgetstatistik erfolgreich aktualisiert.");
+        } catch (err: any) {
+            console.error("Fehler beim Aktualisieren der Budgetstatistik:", err);
+            setError(err.message);
+        } finally {
+            setLoading(false);
+        }
+    }, [backendUrl, budget_id]);
 
     useEffect(() => {
         fetchBudgets();
+        fetchAndCalculateTotals();
     }, []);
 
     if (loading) return <p>Loading...</p>;
@@ -65,11 +103,21 @@ function BudgetPlanView() {
         <main className="flex flex-row h-full w-full bg-sky-300">
             {/* Dashboard */}
             <section
-                className="w-2/3 flex justify-center items-center p-5"
+                className="w-2/3 flex flex-col justify-center gap-5 items-center p-5"
             >
                 <h1 className="text-4xl text-white">
                     {budget_name} - Overall Dashboard Coming Soon...
                 </h1>
+                <div className='flex gap-5'>
+                    <div className='border border-gray-50 shadow-xl text-xl rounded-xl bg-green-100 py-5 px-10'>{totalIncomes}</div>
+                    <div className='border border-gray-50 shadow-xl text-xl rounded-xl bg-red-100 py-5 px-10'>{totalOutgoings}</div>
+                    <div className='border border-gray-50 shadow-xl text-xl rounded-xl bg-gray-100 py-5 px-10'>{total}</div>
+                </div>
+                {/* Visuelle Statisik Ausgaben pro Kategorie in allen Monaten */}
+
+                {/* Visuelle Statisik Verlauf der Ausgaben */}
+
+                {/* Visuelle Statisik Verlauf der Einnahmen */}
             </section>
             {/* Monate */}
             <section
