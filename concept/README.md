@@ -17,6 +17,7 @@ Die XRBT App hat folgenden nützen, es wird ein kleines Nebenprojekt welches mir
 
 ### XRBT - Enviroment
 - **Frontend** (React)
+  - **Statistiken** werden unterstütz mit dem Plugin [Recharts](https://recharts.org/en-US)
 - **Backend** (Python + FastAPI)
 - **Database** (PostgresSQL)
 
