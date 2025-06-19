@@ -12,6 +12,7 @@ function MonthView() {
     const { month_id } = location.state || {};
     const backendUrl = "http://localhost:8000";
     const navigate = useNavigate();
+    const [selectedTitle, setSelectedTitle] = useState('');
 
     const [incomings, setIncomings] = useState<Booking[]>([]);
     const [outgoings, setOutgoings] = useState<Booking[]>([]);
@@ -160,8 +161,31 @@ function MonthView() {
         return acc;
     }, [] as { name: string; value: number }[]);
 
-    console.log("pieChartData:", pieChartData);
+    const uniqueOutgoingTitles = [...new Set(outgoings.map(o => o.titel))];
 
+    const filteredOutgoings = outgoings.filter((item) =>
+        selectedTitle ? item.titel === selectedTitle : false
+    );
+
+    const filteredTotal = filteredOutgoings.reduce(
+        (sum, item) => sum + parseFloat(item.betrag || '0'),
+        0
+    );
+
+    function stringToRandomPastelColor(str: string): string {
+        let hash = 0;
+        for (let i = 0; i < str.length; i++) {
+            hash = (hash << 5) - hash + str.charCodeAt(i) * (i + 1);
+            hash |= 0; // Force 32bit integer
+        }
+        const h = Math.abs(hash) % 360;
+
+        // Zufällige leichte Variation von Sättigung und Helligkeit
+        const s = 50 + (Math.abs(hash * 7) % 20); // 50–69%
+        const l = 75 + (Math.abs(hash * 13) % 15); // 75–89%
+
+        return `hsl(${h}, ${s}%, ${l}%)`;
+    }
 
     if (loading) {
         return <div className="flex justify-center items-center h-screen text-lg">Loading...</div>;
@@ -296,21 +320,56 @@ function MonthView() {
             <section className="w-1/3 flex flex-col justify-between gap-10 items-center h-full rounded-l-2xl overflow-auto bg-white p-5">
                 {/* Platz für weitere Inhalte */}
                 <div className='flex flex-col gap-5 w-full'>
-                    <h1 className='text-4xl font-bold'>Statistik des Monats</h1>
+                    <h1 className='text-4xl font-bold border-b border-gray-300 pb-2'>Statistik des Monats</h1>
                     {/* Umsatz anzeige */}
-                    <div>
-                        <h2>Umsatz:</h2>
-                        <p>
+                    <div className='border border-gray-200 w-full rounded-md p-5 flex justify-between items-center'>
+                        <h2 className='text-2xl'>Umsatz:</h2>
+                        <p
+                            className={`text-xl font-bold p-2 rounded ${totalIncomes + totalOutgoings >= 0 ? 'bg-green-200 text-green-800' : 'bg-red-200 text-red-800'
+                                }`}
+                        >
                             {(totalIncomes + totalOutgoings).toFixed(2)}
                         </p>
-                    </div>
-                    {/* Spezifische Suche */}
 
-                    {/* Kategorische Ausgaben */}
+                    </div>
+                    {/* Spezifische Suche Ausgaben */}
+                    <div className='border border-gray-200 w-full p-5 rounded-md flex flex-col'>
+                        <div className='justify-between items-center flex'>
+                            <h2 className='text-2xl'>Kategorische Suche:</h2>
+                            {/* On Typing Searching for Betrag nach .titel  */}
+                            <select
+                                value={selectedTitle}
+                                onChange={(e) => setSelectedTitle(e.target.value)}
+                                className="p-2 rounded border border-gray-300 "
+                            >
+                                <option value="">Titel auswählen</option>
+                                {uniqueOutgoingTitles.map((title, index) => (
+                                    <option key={index} value={title}>
+                                        {title}
+                                    </option>
+                                ))}
+                            </select>
+
+                        </div>
+                        {selectedTitle && (
+                            <div className="flex justify-between items-center mt-5 pt-5 border-t border-gray-200">
+                                {filteredOutgoings.length > 0 ? (
+                                    <>
+                                        <h2 className='text-2xl'>{selectedTitle}: </h2>
+                                        <p className={`text-xl font-bold p-2 rounded bg-red-200`}>
+                                            {filteredTotal.toFixed(2)} CHF
+                                        </p>
+                                    </>
+                                ) : (
+                                    <p className="text-gray-500">Keine Ausgaben gefunden.</p>
+                                )}
+                            </div>
+                        )}
+                    </div>
 
                     {/* Visuelle Statistik Verlauf im Monat */}
-                    <div className="w-full h-[250px]">
-                        <h2 className="text-md font-semibold mb-2">📈 Einnahmen & Ausgaben Verlauf</h2>
+                    <div className="w-full h-[250px] p-5 border border-gray-200 rounded flex flex-col">
+                        <h2 className="text-2xl mb-5">Monatsverlauf:</h2>
                         <ResponsiveContainer width="100%" height="100%">
                             <LineChart data={chartData}>
                                 <CartesianGrid strokeDasharray="3 3" />
@@ -325,7 +384,8 @@ function MonthView() {
                     </div>
 
                     {/* Visuelle Statistik prozentualer Kuchen */}
-                    <div className="w-full h-[250px]">
+                    <div className="w-full h-[250px] p-5 border border-gray-200 rounded flex flex-col">
+                        <h2 className="text-2xl mb-5">Ausgaben Prozentual:</h2>
                         <ResponsiveContainer width="100%" height="100%">
                             <PieChart>
                                 <Pie
@@ -338,7 +398,7 @@ function MonthView() {
                                     label
                                 >
                                     {pieChartData.map((entry, index) => (
-                                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                                        <Cell key={`cell-${index}`} fill={stringToRandomPastelColor(entry.name)} />
                                     ))}
                                 </Pie>
                                 <Tooltip />
