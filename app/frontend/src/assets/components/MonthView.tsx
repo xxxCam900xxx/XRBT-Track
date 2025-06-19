@@ -36,7 +36,7 @@ function MonthView() {
             const data: Booking[] = await response.json();
             return data;
         } catch (err: any) {
-            console.error(`Error fetching ${type}s:`, err);
+            console.error(`Error fetching ${type}:`, err);
             setError(err.message);
             return [];
         }
