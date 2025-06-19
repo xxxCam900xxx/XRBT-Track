@@ -2,6 +2,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from sqlalchemy import update
 from database.models import Monat
+from database.models import Buchung
+from service.bookingService import getAllBookingsByTypeAndId
+from typing import List
 
 async def getAllMonths(db: AsyncSession):
     result = await db.execute(select(Monat))
@@ -23,4 +26,19 @@ async def updateMonthsByID(id, body, db: AsyncSession):
     await db.execute(update_stmt)
     await db.commit()
     return
+
+async def getAllAmountsByID(budget_id: int, typ: str, db: AsyncSession):
     
+    monthBundle: List[Monat] = await getAllMonthsByBudgetID(budget_id, db)
+    
+    bookingBundle: List[Buchung] = []
+
+    for month in monthBundle:
+        currentBundle = await getAllBookingsByTypeAndId(month.monat_id, typ, db)
+        if not len(currentBundle) == 0:
+            bookingBundle.append({
+                "Monat": month.monat_name,
+                "Buchungen": currentBundle
+            })
+
+    return bookingBundle
