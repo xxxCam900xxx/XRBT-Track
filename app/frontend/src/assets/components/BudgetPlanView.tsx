@@ -4,12 +4,13 @@ import { Month } from '../types/month';
 import { Booking } from '../types/booking';
 
 import {
-  BarChart,
-  Bar,
+  LineChart,
+  Line,
+  CartesianGrid,
   XAxis,
   YAxis,
   Tooltip,
-  CartesianGrid,
+  ResponsiveContainer,
   Legend,
 } from 'recharts';
 
@@ -24,8 +25,8 @@ function BudgetPlanView() {
   const [totalIncomes, setTotalIncomes] = useState(0);
   const [totalOutgoings, setTotalOutgoings] = useState(0);
   const [total, setTotal] = useState(0);
-  const [categoryChartData, setCategoryChartData] = useState<
-    { Monat: string; [titel: string]: number }[]>([]);
+  const [lineChartData, setLineChartData] = useState<any[]>([]);
+  const [allTitles, setAllTitles] = useState<string[]>([]);
 
   const backendUrl = "http://localhost:8000";
   const navigate = useNavigate();
@@ -53,24 +54,46 @@ function BudgetPlanView() {
     return result;
   };
 
-  function summiereAlleTitelProMonat(
-    data: { Monat: string; Buchungen: Booking[] }[]
-  ): { Monat: string; [titel: string]: number }[] {
-    return data.map(({ Monat, Buchungen }) => {
-      const summen: { [titel: string]: number } = {};
-      for (const buchung of Buchungen) {
-        const titel = buchung.titel;
-        const betrag = parseFloat(buchung.betrag);
-        if (!summen[titel]) summen[titel] = 0;
-        summen[titel] += betrag;
-      }
-      return { Monat, ...summen };
+  function bereiteLineChartDatenVor(data: { Monat: string; Buchungen: Booking[] }[]) {
+    const monatZuTitel: Record<string, Record<string, number>> = {};
+
+    data.forEach(({ Monat, Buchungen }) => {
+      if (!monatZuTitel[Monat]) monatZuTitel[Monat] = {};
+      Buchungen.forEach(b => {
+        const betrag = Math.abs(parseFloat(b.betrag));
+        monatZuTitel[Monat][b.titel] = (monatZuTitel[Monat][b.titel] || 0) + betrag;
+      });
     });
+
+    const titelSet = new Set<string>();
+    Object.values(monatZuTitel).forEach(obj => {
+      Object.keys(obj).forEach(titel => titelSet.add(titel));
+    });
+
+    const result = Object.entries(monatZuTitel).map(([Monat, werte]) => {
+      const eintrag: any = { Monat };
+      titelSet.forEach(titel => {
+        eintrag[titel] = werte[titel] || 0;
+      });
+      return eintrag;
+    });
+
+    return { daten: result, titelListe: Array.from(titelSet) };
   }
 
-  function getColor(index: number) {
-    const colors = ['#8884d8', '#82ca9d', '#ffc658', '#ff7f50', '#a4de6c', '#d0ed57', '#b19cd9'];
-    return colors[index % colors.length];
+  function stringToRandomPastelColor(str: string): string {
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) {
+      hash = (hash << 5) - hash + str.charCodeAt(i) * (i + 1);
+      hash |= 0; // Force 32bit integer
+    }
+    const h = Math.abs(hash) % 360;
+
+    // Zufällige leichte Variation von Sättigung und Helligkeit
+    const s = 50 + (Math.abs(hash * 7) % 20); // 50–69%
+    const l = 75 + (Math.abs(hash * 13) % 15); // 75–89%
+
+    return `hsl(${h}, ${s}%, ${l}%)`;
   }
 
   useEffect(() => {
@@ -103,8 +126,9 @@ function BudgetPlanView() {
         });
 
         const ausgaben = await fetchAmounts('ausgabe');
-        const summarized = summiereAlleTitelProMonat(ausgaben);
-        setCategoryChartData(summarized);
+        const { daten, titelListe } = bereiteLineChartDatenVor(ausgaben);
+        setLineChartData(daten);
+        setAllTitles(titelListe);
 
       } catch (err: any) {
         console.error("Fehler beim Laden:", err);
@@ -120,15 +144,6 @@ function BudgetPlanView() {
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error: {error}</p>;
-
-  // Titelkeys automatisch extrahieren (außer "Monat")
-  const allKeys = Array.from(
-    new Set(
-      categoryChartData.flatMap(obj =>
-        Object.keys(obj).filter(key => key !== 'Monat')
-      )
-    )
-  );
 
   return (
     <main className="flex flex-row h-full w-full bg-sky-300">
@@ -147,19 +162,29 @@ function BudgetPlanView() {
           </div>
         </div>
 
-        {/* Chart */}
-        <div className="mt-10 bg-white p-5 rounded-lg shadow-lg w-full max-w-3xl">
-          <h2 className="text-2xl mb-4">Ausgaben pro Kategorie und Monat</h2>
-          <BarChart width={600} height={300} data={categoryChartData}>
-            <CartesianGrid stroke="#ccc" />
-            <XAxis dataKey="Monat" />
-            <YAxis />
-            <Tooltip />
-            <Legend />
-            {allKeys.map((key, index) => (
-              <Bar key={key} dataKey={key} stackId="a" fill={getColor(index)} />
-            ))}
-          </BarChart>
+        {/* Liniendiagramm */}
+        <div className="mt-10 bg-white p-5 pb-15 rounded-lg shadow-lg w-full max-w-5xl h-[400px]">
+          <h2 className="text-2xl mb-4">Ausgabenverlauf pro Kategorie</h2>
+          <ResponsiveContainer width="100%" height="100%">
+            <LineChart data={lineChartData}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="Monat" />
+              <YAxis />
+              <Tooltip formatter={(value) => `${value} CHF`} />
+              <Legend />
+              {allTitles.map((titel, index) => (
+                <Line
+                  key={titel}
+                  type="monotone"
+                  dataKey={titel}
+                  stroke={stringToRandomPastelColor(titel)}
+                  strokeWidth={2}
+                  dot={{ r: 3 }}
+                  connectNulls
+                />
+              ))}
+            </LineChart>
+          </ResponsiveContainer>
         </div>
       </section>
 

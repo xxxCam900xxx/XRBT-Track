@@ -194,7 +194,6 @@ function MonthView() {
     if (error) {
         return <div className="flex justify-center items-center h-screen text-lg text-red-600">Error: {error}</div>;
     }
-    const COLORS = ['#ff6961', '#f39c12', '#3498db', '#2ecc71', '#9b59b6'];
 
     return (
         <main className="flex flex-row h-full w-full bg-sky-300">
