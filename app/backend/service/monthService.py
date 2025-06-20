@@ -35,10 +35,9 @@ async def getAllAmountsByID(budget_id: int, typ: str, db: AsyncSession):
 
     for month in monthBundle:
         currentBundle = await getAllBookingsByTypeAndId(month.monat_id, typ, db)
-        if not len(currentBundle) == 0:
-            bookingBundle.append({
-                "Monat": month.monat_name,
-                "Buchungen": currentBundle
-            })
+        bookingBundle.append({
+            "Monat": month.monat_name,
+            "Buchungen": currentBundle
+        })
 
     return bookingBundle
