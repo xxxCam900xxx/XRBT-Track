@@ -3,7 +3,7 @@ import { Budget } from '../types/budget';
 import CreateNewBudgetPopUp from '../widgets/CreateNewBudgetPopUp';
 import { useNavigate } from 'react-router-dom';
 
-function BudgetSelectionView() {
+function OverallView() {
   const [data, setData] = useState<Budget[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -159,4 +159,4 @@ function BudgetSelectionView() {
   );
 }
 
-export default BudgetSelectionView;
+export default OverallView;
