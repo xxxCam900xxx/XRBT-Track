@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends
 from database.database import get_db
 from sqlalchemy.ext.asyncio import AsyncSession
-from service.bookingService import getAllBookings, getAllBookingsByTypeAndId, addNewBooking
+from service.bookingService import getAllBookings, getAllBookingsByTypeAndId, addNewBooking, deleteBooking
 from pydantic import BaseModel
 
 router = APIRouter(
@@ -32,3 +32,7 @@ async def add_New_Booking(body: BookingModel, db: AsyncSession = Depends(get_db)
 @router.patch("/")
 async def add_Update_Booking(body: BookingModel, db: AsyncSession = Depends(get_db)):
     return await addNewBooking(body, db)
+
+@router.delete("/{booking_id}")
+async def delete_Booking(booking_id, db: AsyncSession = Depends(get_db)):
+    return await deleteBooking(booking_id, db)

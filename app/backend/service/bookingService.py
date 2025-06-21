@@ -1,6 +1,7 @@
 from datetime import date
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
+from sqlalchemy import delete
 from sqlalchemy import insert
 from sqlalchemy import update
 from database.models import Buchung
@@ -12,6 +13,12 @@ async def getAllBookings(db: AsyncSession):
 async def getAllBookingsByTypeAndId(id, typ, db: AsyncSession):
     result = await db.execute(select(Buchung).where(Buchung.typ == typ).where(Buchung.monat_id == int(id)).order_by(Buchung.datum))
     return result.scalars().all()
+
+async def deleteBooking(id, db: AsyncSession):
+    deleteStmt = delete(Buchung).where(Buchung.buchung_id == int(id))
+    await db.execute(deleteStmt)
+    await db.commit()
+    return
 
 async def addNewBooking(body, db: AsyncSession):
     if (body.buchung_id != ""):
