@@ -4,9 +4,9 @@ Docker ist ein echt gutes Tool um ein Projekt immer in der selben Umgebung start
 ### 0 | Anforderungen
 Füge im Ordner `docker/database` eine Datei namens `db.env` hinzu welche folgende Umgebungsvariabeln hat:
 ```
-POSTGRES_USER
-POSTGRES_PASSWORD
-POSTGRES_DB
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=password
+POSTGRES_DB=mydatabase
 ```
 
 ### 1 | Docker starten
