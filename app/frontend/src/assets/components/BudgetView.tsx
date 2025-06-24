@@ -146,79 +146,152 @@ function BudgetPlanView() {
   if (error) return <p>Error: {error}</p>;
 
   return (
-    <main className="flex flex-row h-full w-full bg-sky-300">
-      <section className="w-2/3 flex flex-col justify-center gap-5 items-center p-5">
-        <h1 className="text-4xl text-white">{budget_name} - Dashboard</h1>
+    <main className="flex flex-row h-full w-full primary-background-color">
 
-        <div className="flex gap-5">
-          <div className="border border-gray-50 shadow-xl text-xl rounded-xl bg-green-100 py-5 px-10">
-            {totalIncomes} CHF
-          </div>
-          <div className="border border-gray-50 shadow-xl text-xl rounded-xl bg-red-100 py-5 px-10">
-            {totalOutgoings} CHF
-          </div>
-          <div className="border border-gray-50 shadow-xl text-xl rounded-xl bg-gray-100 py-5 px-10">
-            {total} CHF
-          </div>
-        </div>
+      {/* Navigation Section */}
+      <section className="w-1/4 flex flex-col h-full secondary-background-color shadow-2xl">
 
-        {/* Liniendiagramm */}
-        <div className="mt-10 bg-white p-5 pb-15 rounded-lg shadow-lg w-full max-w-5xl h-[400px]">
-          <h2 className="text-2xl mb-4">Ausgabenverlauf pro Kategorie</h2>
-          <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={lineChartData}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="Monat" />
-              <YAxis />
-              <Tooltip formatter={(value) => `${value} CHF`} />
-              <Legend />
-              {allTitles.map((titel, index) => (
-                <Line
-                  key={titel}
-                  type="monotone"
-                  dataKey={titel}
-                  stroke={stringToRandomPastelColor(titel)}
-                  strokeWidth={2}
-                  dot={{ r: 3 }}
-                  connectNulls
-                />
-              ))}
-            </LineChart>
-          </ResponsiveContainer>
-        </div>
+        <img src="/images/XRBT-Banner.png" alt="XRBT-Banner" className='w-full' />
+
+        <section className="w-full h-full max-h-full overflow-y-auto flex flex-col p-5 gap-3">
+          {data.map((month) => {
+
+            return (
+              <div
+                key={month.monat_id}
+                className="p-2 rounded-md cursor-pointer flex flex-row gap-5 items-center justify-between primary-background-color"
+                onClick={() => navigateToMonth(month.monat_id)}
+              >
+                <h3 className="text-2xl text-white font-semibold">{month.monat_name}</h3>
+                <p className={`${parseFloat(month.total_umsatz) < 0 ? 'bg-red-50 text-red-600' : 'bg-emerald-50 text-emerald-600'
+                  } p-2 rounded-md w-[150px] text-center text-lg font-medium`}>{month.total_umsatz} CHF</p>
+              </div>
+            );
+          })}
+        </section>
       </section>
 
-      <section className="w-1/3 flex flex-col h-full rounded-l-2xl overflow-auto bg-white">
-        {data.map((month) => {
-          const start = new Date(month.start_datum).toLocaleDateString("de-DE");
-          const end = new Date(month.end_datum).toLocaleDateString("de-DE");
+      {/* Dashboard Section */}
+      <aside className='flex flex-col gap-5 w-3/4 p-10'>
 
-          return (
+        {/* Namespace */}
+        <section className='flex flex-row justify-between items-center'>
+          <h1 className='text-4xl text-white font-semibold'>{budget_name}</h1>
+          {/* Return Button */}
+          <button
+            className="secondary-background-color text-md aspect-square w-[50px] rounded-xl cursor-pointer flex items-center justify-center"
+            onClick={goBack}
+          >
+            <i className="fa-solid fa-xmark primary-background-textcolor text-3xl"></i>
+          </button>
+        </section>
+
+        {/* Totals */}
+        <section className='flex gap-5'>
+          <div className='flex flex-col gap-2 p-3 secondary-background-color w-full h-fit rounded-md'>
+            <div className='flex flex-row gap-2 w-full items-center'>
+              <i className="fa-solid fa-piggy-bank text-3xl primary-background-textcolor"></i>
+              <h1 className='text-3xl font-semibold primary-background-textcolor'>Einnahmen</h1>
+            </div>
+            <div className='bg-emerald-50 text-emerald-600 text-center text-3xl font-semibold p-3 rounded-md'>
+              +{totalIncomes} CHF
+            </div>
+          </div>
+          <div className='flex flex-col gap-2 p-3 secondary-background-color w-full h-fit rounded-md'>
+            <div className='flex flex-row gap-2 w-full items-center'>
+              <i className="fa-solid fa-cart-shopping text-3xl primary-background-textcolor"></i>
+              <h1 className='text-3xl font-semibold primary-background-textcolor'>Ausgaben</h1>
+            </div>
+            <div className='bg-red-50 text-red-600 text-center text-3xl font-semibold p-3 rounded-md'>
+              {totalOutgoings} CHF
+            </div>
+          </div>
+          <div className='flex flex-col gap-2 p-3 secondary-background-color w-full h-fit rounded-md'>
+            <div className='flex flex-row gap-2 w-full items-center'>
+              <i className="fa-solid fa-chart-simple text-3xl primary-background-textcolor"></i>
+              <h1 className='text-3xl font-semibold primary-background-textcolor'>Umsatz</h1>
+            </div>
             <div
-              key={month.monat_id}
-              className="p-4 border-b border-gray-200 hover:bg-gray-100 cursor-pointer flex flex-row gap-5 items-center justify-between"
-              onClick={() => navigateToMonth(month.monat_id)}
+              className={`${total < 0 ? 'bg-red-50 text-red-600' : 'bg-emerald-50 text-emerald-600'
+                } text-center text-3xl font-semibold p-3 rounded-md`}
             >
-              <div className="w-[200px]">
-                <h3 className="text-lg font-semibold">{month.monat_name}</h3>
-                <p className="text-sm text-gray-600">{start} – {end}</p>
+              {total} CHF
+            </div>
+          </div>
+        </section>
+
+        {/* Statistic Jahres Verlauf */}
+        <section className='flex items-center w-full text-white justify-center'>
+
+          <div className='flex flex-col gap-2 secondary-background-color w-full p-3 rounded-md'>
+            <div className='flex flex-row gap-2 w-full items-center justify-between'>
+              <div className='flex flex-row gap-2 w-full items-center'>
+                <i className="fa-solid fa-chart-simple text-3xl primary-background-textcolor"></i>
+                <h1 className='primary-background-textcolor text-3xl font-semibold'>Jahres Verlauf</h1>
               </div>
-              <div className="w-1/3 text-center rounded-md overflow-hidden">
-                <p className="bg-green-300 text-sm">Einnahmen: {month.total_einnahmen} CHF</p>
-                <p className="bg-red-300 text-sm">Ausgaben: {month.total_ausgaben} CHF</p>
-                <p className="bg-gray-100 text-sm font-medium">Umsatz: {month.total_umsatz} CHF</p>
+              <div className='flex flex-row gap-2 items-center'>
+                <button className='p-2 primary-background-color text-white font-semibold rounded-md cursor-pointer'>Einnahmen</button>
+                <button className='p-2 primary-background-color text-white font-semibold rounded-md cursor-pointer'>Ausgaben</button>
+                <button className='p-2 primary-background-color text-white font-semibold rounded-md cursor-pointer'>Umsatz</button>
               </div>
             </div>
-          );
-        })}
-      </section>
+            <div className='h-[250px]'>
+              <ResponsiveContainer width="100%" height="100%" className={"bg-white rounded-md p-5"}>
+                <LineChart data={lineChartData}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="Monat" />
+                  <YAxis />
+                  <Tooltip formatter={(value) => `${value} CHF`} />
+                  <Legend />
+                  {allTitles.map((titel, index) => (
+                    <Line
+                      key={titel}
+                      type="monotone"
+                      dataKey={titel}
+                      stroke={stringToRandomPastelColor(titel)}
+                      strokeWidth={2}
+                      dot={{ r: 3 }}
+                      connectNulls
+                    />
+                  ))}
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+        </section>
 
-      <button
-        className="fixed top-5 left-5 bg-white text-md aspect-square w-[40px] rounded-xl cursor-pointer flex items-center justify-center"
-        onClick={goBack}
-      >
-        <i className="fa-solid fa-xmark text-sky-400 text-2xl"></i>
-      </button>
+        {/* Statistic Umsatz Verlauf Pro Kategorie */}
+        <section className='flex items-center w-full text-white justify-center'>
+          <div className='flex flex-col gap-2 secondary-background-color w-full p-3 rounded-md'>
+            <div className='flex flex-row gap-2 w-full items-center'>
+              <i className="fa-solid fa-chart-simple text-3xl primary-background-textcolor"></i>
+              <h1 className='primary-background-textcolor text-3xl font-semibold'>Ausgaben Verlauf Pro Kategorie</h1>
+            </div>
+            <div className='h-[250px]'>
+              <ResponsiveContainer width="100%" height="100%" className={"bg-white rounded-md p-5"}>
+                <LineChart data={lineChartData}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="Monat" />
+                  <YAxis />
+                  <Tooltip formatter={(value) => `${value} CHF`} />
+                  <Legend />
+                  {allTitles.map((titel, index) => (
+                    <Line
+                      key={titel}
+                      type="monotone"
+                      dataKey={titel}
+                      stroke={stringToRandomPastelColor(titel)}
+                      strokeWidth={2}
+                      dot={{ r: 3 }}
+                      connectNulls
+                    />
+                  ))}
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+        </section>
+      </aside>
     </main>
   );
 }

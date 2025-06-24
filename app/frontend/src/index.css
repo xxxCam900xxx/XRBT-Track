@@ -2,8 +2,31 @@
 
 :root {
     --primary-color: #00aabb;
+    --primary-darkcolor: #3c858e;
     --secondary-color: #D3F0F5;
 }
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: var(--primary-color);
+  border-radius: 10px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+  transition: background-color 0.2s ease-in-out;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: var(--secondary-color);
+}
+
 
 #root {
     height: 100vh;
@@ -12,6 +35,10 @@
 
 .primary-background-color {
     background-color: var(--primary-color) !important;
+}
+
+.primary-background-darkcolor {
+    background-color: var(--primary-darkcolor) !important;
 }
 .secondary-background-color {
     background-color: var(--secondary-color) !important;

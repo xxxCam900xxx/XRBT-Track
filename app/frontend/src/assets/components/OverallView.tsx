@@ -166,8 +166,6 @@ function OverallView() {
         <section className='flex items-center w-full h-full text-white text-5xl justify-center'>
           Statistics still in Progress...
         </section>
-
-
       </aside>
 
 
