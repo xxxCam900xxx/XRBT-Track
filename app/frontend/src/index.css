@@ -1,6 +1,25 @@
 @import "tailwindcss";
 
+:root {
+    --primary-color: #00aabb;
+    --secondary-color: #D3F0F5;
+}
+
 #root {
     height: 100vh;
     overflow: hidden;
+}
+
+.primary-background-color {
+    background-color: var(--primary-color) !important;
+}
+.secondary-background-color {
+    background-color: var(--secondary-color) !important;
+}
+
+.primary-background-textcolor {
+    color: var(--primary-color) !important;
+}
+.secondary-background-textcolor {
+    color: var(--secondary-color) !important;
 }
