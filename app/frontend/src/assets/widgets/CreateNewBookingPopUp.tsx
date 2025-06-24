@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Booking } from "../types/booking";
+import { Template } from "../types/template";
 
 interface CreateNewBookingPopUpProps {
     displayNewBookingPopUp: boolean;
@@ -20,6 +21,13 @@ const CreateNewBookingPopUp: React.FC<CreateNewBookingPopUpProps> = ({
 }) => {
     const backendUrl = "http://localhost:8000"
     const [formData, setFormData] = useState({ buchung_id: booking.buchung_id, titel: booking.titel, datum: booking.datum, typ: booking.typ, betrag: booking.betrag, monat_id: `${month_id}` });
+
+    const templateExists = (titel: string, typ: string): boolean => {
+        return templateData.some(template =>
+            template.titel.trim().toLowerCase() === titel.trim().toLowerCase() &&
+            template.typ.trim().toLowerCase() === typ.trim().toLowerCase()
+        );
+    };
 
     const createNewBooking = async () => {
         try {
@@ -55,6 +63,11 @@ const CreateNewBookingPopUp: React.FC<CreateNewBookingPopUpProps> = ({
             if (response.ok) {
                 const data = await response.json();
                 console.log("Budget created:", data);
+
+                if (!templateExists(formData.titel, formData.typ)) {
+                    await createTemplate(formData.titel, formData.typ, processedBetrag);
+                }
+
                 setDisplayNewBookingPopUp(false);
                 setBooking({
                     buchung_id: "",
@@ -73,6 +86,75 @@ const CreateNewBookingPopUp: React.FC<CreateNewBookingPopUpProps> = ({
         }
     };
 
+    const createTemplate = async (title: string, typ: string, betrag: number) => {
+        try {
+            const response = await fetch(`${backendUrl}/template/`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ title, typ, betrag })
+            });
+            if (!response.ok) {
+                throw new Error("Fehler beim Erstellen des Templates");
+            }
+            const newTemplate = await response.json();
+            console.log("Neues Template erstellt:", newTemplate);
+            setTemplateData(prev => [...prev, newTemplate]);
+        } catch (err) {
+            console.error("Fehler beim Erstellen des Templates:", err);
+        }
+    };
+
+    const [templateData, setTemplateData] = useState<Template[]>([]);
+    const fetchTemplates = async (): Promise<Template[]> => {
+        try {
+            const response = await fetch(`${backendUrl}/template/`)
+            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+            const data: Template[] = await response.json();
+            setTemplateData(data);
+            return data;
+        } catch (err: any) {
+            return [];
+        }
+    };
+
+    const handleDeleteTemplate = async (template_id: string) => {
+        try {
+            const response = await fetch(`${backendUrl}/template/${template_id}`, {
+                method: "DELETE",
+            });
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            console.log("Template erfolgreich gelöscht.");
+            setTemplateData((prev) =>
+                prev.filter((template) => template.template_id !== template_id)
+            );
+        } catch (error) {
+            console.error("Fehler beim Löschen des Templates:", error);
+        }
+    };
+
+    const handleTemplateCopy = (template: Template) => {
+        setFormData((prev) => ({
+            ...prev,
+            titel: template.titel,
+            typ: template.typ,
+            betrag: template.betrag.toString(),
+        }));
+    };
+
+    const [searchTerm, setSearchTerm] = useState("");
+    const filteredTemplates = templateData.filter((template) => {
+        const term = searchTerm.toLowerCase();
+        return (
+            template.titel.toLowerCase().includes(term) ||
+            template.typ.toLowerCase().includes(term) ||
+            template.betrag.toString().includes(term)
+        );
+    });
+
     useEffect(() => {
         setFormData({
             buchung_id: booking.buchung_id,
@@ -82,6 +164,7 @@ const CreateNewBookingPopUp: React.FC<CreateNewBookingPopUpProps> = ({
             betrag: booking.betrag,
             monat_id: `${month_id}`,
         });
+        fetchTemplates();
     }, [booking, month_id]);
 
 
@@ -183,25 +266,62 @@ const CreateNewBookingPopUp: React.FC<CreateNewBookingPopUpProps> = ({
                 </div>
                 {/* Searching Booking Feature */}
                 <div className="flex flex-col gap-2">
-                    <input type="text" placeholder="Suche nach durchgeführte Buchungen" className="p-3 text-md rounded bg-white" />
+                    <input
+                        type="text"
+                        placeholder="Suche nach durchgeführte Buchungen"
+                        className="p-3 text-md rounded bg-white"
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                    />
                     <section className="flex flex-col gap-2">
-                        <div className="flex flex-row justify-between bg-white p-3 rounded-md">
-                            <h1 className="">Titel Kategorie</h1>
-                            <button className="cursor-pointer">
-                                <i className="fa-solid fa-copy"></i>
-                            </button>
-                        </div>
-                        <div className="flex flex-row justify-between bg-white p-3 rounded-md">
-                            <h1 className="">Titel Kategorie</h1>
-                            <button className="cursor-pointer">
-                                <i className="fa-solid fa-copy"></i>
-                            </button>
-                        </div>
-                        <div className="flex flex-row justify-between bg-white p-3 rounded-md">
-                            <h1 className="">Titel Kategorie</h1>
-                            <button className="cursor-pointer">
-                                <i className="fa-solid fa-copy"></i>
-                            </button>
+                        <div className="w-full bg-white rounded-md overflow-hidden">
+                            <table className="w-full text-sm text-left">
+                                <thead className="text-xs text-white primary-background-color uppercase">
+                                    <tr>
+                                        <th scope="col" className="px-6 py-3">Titel</th>
+                                        <th scope="col" className="px-6 py-3">Typ</th>
+                                        <th scope="col" className="px-6 py-3">Betrag</th>
+                                        <th scope="col" className="px-6 py-3 text-right">Aktionen</th>
+                                    </tr>
+                                </thead>
+                            </table>
+                            <div className="max-h-[200px] overflow-y-auto">
+                                <table className="w-full text-sm text-left">
+                                    <tbody>
+                                        {filteredTemplates.map((template) => (
+                                            <tr
+                                                key={template.template_id}
+                                                className={`border-b hover:bg-gray-50 ${template.typ === "ausgabe"
+                                                    ? "bg-red-50 text-red-600"
+                                                    : template.typ === "einnahme"
+                                                        ? "bg-emerald-50 text-emerald-600"
+                                                        : ""
+                                                    }`}
+                                            >
+                                                <td className="p-5 font-medium">{template.titel}</td>
+                                                <td className="p-5 capitalize">{template.typ}</td>
+                                                <td className="p-5">{parseFloat(template.betrag).toFixed(2)} CHF</td>
+                                                <td className="p-5 text-right flex gap-3 items-center justify-end">
+                                                    <button
+                                                        className="cursor-pointer"
+                                                        onClick={() => handleTemplateCopy(template)}
+                                                        title="Template kopieren"
+                                                    >
+                                                        <i className="fa-solid fa-copy"></i>
+                                                    </button>
+                                                    <button
+                                                        className="cursor-pointer"
+                                                        onClick={() => handleDeleteTemplate(template.template_id)}
+                                                        title="Template löschen"
+                                                    >
+                                                        <i className="fa-solid fa-trash"></i>
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </section>
                 </div>
