@@ -25,8 +25,16 @@ function BudgetPlanView() {
   const [totalIncomes, setTotalIncomes] = useState(0);
   const [totalOutgoings, setTotalOutgoings] = useState(0);
   const [total, setTotal] = useState(0);
-  const [lineChartData, setLineChartData] = useState<any[]>([]);
   const [allTitles, setAllTitles] = useState<string[]>([]);
+
+  const [lineChartData, setLineChartData] = useState<any[]>([]);
+  const [gesamtLineChartData, setGesamtLineChartData] = useState<any[]>([]);
+  const [visibleLines, setVisibleLines] = useState({
+    einnahmen: true,
+    ausgaben: true,
+    umsatz: true,
+  });
+
 
   const backendUrl = "http://localhost:8000";
   const navigate = useNavigate();
@@ -44,6 +52,7 @@ function BudgetPlanView() {
     if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
     const months: Month[] = await response.json();
     setData(months);
+    setLineChartData(erstelleLineChartDaten(months, 'umsatz'));
     return months;
   };
 
@@ -52,6 +61,10 @@ function BudgetPlanView() {
     if (!response.ok) throw new Error(`HTTP Error! Status: ${response.status}`);
     const result: { Monat: string; Buchungen: Booking[] }[] = await response.json();
     return result;
+  };
+
+  const toggleLine = (key: 'einnahmen' | 'ausgaben' | 'umsatz') => {
+    setVisibleLines(prev => ({ ...prev, [key]: !prev[key] }));
   };
 
   function bereiteLineChartDatenVor(data: { Monat: string; Buchungen: Booking[] }[]) {
@@ -79,6 +92,27 @@ function BudgetPlanView() {
     });
 
     return { daten: result, titelListe: Array.from(titelSet) };
+  }
+
+  function erstelleLineChartDaten(monatsdaten: Month[], chartType: 'umsatz' | 'einnahmen' | 'ausgaben') {
+    return monatsdaten.map(month => ({
+      Monat: month.monat_name,
+      Wert:
+        chartType === 'einnahmen'
+          ? parseFloat(month.total_einnahmen || '0')
+          : chartType === 'ausgaben'
+            ? parseFloat(month.total_ausgaben || '0')
+            : parseFloat(month.total_umsatz || '0'),
+    }));
+  }
+
+  function erstelleGesamtLineChartDaten(monatsdaten: Month[]) {
+    return monatsdaten.map(month => ({
+      Monat: month.monat_name,
+      einnahmen: parseFloat(month.total_einnahmen || '0'),
+      ausgaben: parseFloat(month.total_ausgaben || '0'),
+      umsatz: parseFloat(month.total_umsatz || '0'),
+    }));
   }
 
   function stringToRandomPastelColor(str: string): string {
@@ -127,6 +161,7 @@ function BudgetPlanView() {
 
         const ausgaben = await fetchAmounts('ausgabe');
         const { daten, titelListe } = bereiteLineChartDatenVor(ausgaben);
+        setGesamtLineChartData(erstelleGesamtLineChartDaten(fetchedMonths));
         setLineChartData(daten);
         setAllTitles(titelListe);
 
@@ -230,32 +265,63 @@ function BudgetPlanView() {
                 <h1 className='primary-background-textcolor text-3xl font-semibold'>Jahres Verlauf</h1>
               </div>
               <div className='flex flex-row gap-2 items-center'>
-                <button className='p-2 primary-background-color text-white font-semibold rounded-md cursor-pointer'>Einnahmen</button>
-                <button className='p-2 primary-background-color text-white font-semibold rounded-md cursor-pointer'>Ausgaben</button>
-                <button className='p-2 primary-background-color text-white font-semibold rounded-md cursor-pointer'>Umsatz</button>
+                {(['einnahmen', 'ausgaben', 'umsatz'] as const).map((key) => (
+                  <button
+                    key={key}
+                    className={`p-2 rounded-md cursor-pointer font-semibold ${visibleLines[key] ? 'primary-background-color text-white' : 'bg-gray-200 text-gray-800'
+                      }`}
+                    onClick={() => toggleLine(key)}
+                  >
+                    {key.charAt(0).toUpperCase() + key.slice(1)}
+                  </button>
+                ))}
               </div>
+
             </div>
             <div className='h-[250px]'>
-              <ResponsiveContainer width="100%" height="100%" className={"bg-white rounded-md p-5"}>
-                <LineChart data={lineChartData}>
+              <ResponsiveContainer width="100%" height="100%" className="bg-white rounded-md p-5">
+                <LineChart data={gesamtLineChartData}>
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="Monat" />
                   <YAxis />
                   <Tooltip formatter={(value) => `${value} CHF`} />
                   <Legend />
-                  {allTitles.map((titel, index) => (
+                  {visibleLines.einnahmen && (
                     <Line
-                      key={titel}
                       type="monotone"
-                      dataKey={titel}
-                      stroke={stringToRandomPastelColor(titel)}
+                      dataKey="einnahmen"
+                      stroke="#10b981" // emerald-500
+                      name="Einnahmen"
                       strokeWidth={2}
                       dot={{ r: 3 }}
                       connectNulls
                     />
-                  ))}
+                  )}
+                  {visibleLines.ausgaben && (
+                    <Line
+                      type="monotone"
+                      dataKey="ausgaben"
+                      stroke="#ef4444" // red-500
+                      name="Ausgaben"
+                      strokeWidth={2}
+                      dot={{ r: 3 }}
+                      connectNulls
+                    />
+                  )}
+                  {visibleLines.umsatz && (
+                    <Line
+                      type="monotone"
+                      dataKey="umsatz"
+                      stroke="#6366f1" // indigo-500
+                      name="Umsatz"
+                      strokeWidth={2}
+                      dot={{ r: 3 }}
+                      connectNulls
+                    />
+                  )}
                 </LineChart>
               </ResponsiveContainer>
+
             </div>
           </div>
         </section>
