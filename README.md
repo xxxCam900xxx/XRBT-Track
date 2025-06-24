@@ -1,15 +1,16 @@
 ![XRBT - React Budget Tracker](/concept/images/XRBT-Banner.png)
 
-### Wilkommen beim React Budget Tracker!
+# Wilkommen beim React Budget Tracker!
+Ein einfacher Budget-Tracker mit grossem Funktionsumfang, der sich durch eine einfache Gestaltung und gut einsehbare Statistiken auszeichnet. Ausserdem ist ein Export der Daten in Excel möglich.
 
-### Konzepte & Ideen
+## Konzepte & Ideen
 --> [Klicken Sie hier, um mehr zu erfahren](/concept/README.md) <--
 
-### Wie starte ich das Projekt mit Docker?
+## Wie starte ich das Projekt mit Docker?
 --> [Klicken Sie hier, um mehr zu erfrahren](./docker/README.md) <--
 
-### Figma Design
+## Figma Design
 --> [Klicken Sie hier, um mehr zu erfahren](https://www.figma.com/design/3pk8y0QeCmWFo15dD79rdp/React-Buget-Tracker?node-id=0-1&p=f&t=DNMcW30wSBmMJkzp-0) <--
 
-### Projekt Kanban
+## Projekt Kanban
 --> [Klicken Sie hier, um mehr zu erfahren](https://github.com/users/xxxCam900xxx/projects/9) <--
