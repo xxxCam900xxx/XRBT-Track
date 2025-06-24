@@ -89,7 +89,7 @@ const CreateNewBookingPopUp: React.FC<CreateNewBookingPopUpProps> = ({
 
     return (
         <div role="popUp"
-            className="fixed top-0 left-0 w-full h-full flex items-center justify-center"
+            className="fixed top-0 left-0 w-full h-full flex gap-2 items-center justify-center"
         >
             <div className="absolute top-0 left-0 w-full h-full primary-background-color opacity-50 z-[-1]" onClick={() => setDisplayNewBookingPopUp(false)} ></div>
 
@@ -171,6 +171,40 @@ const CreateNewBookingPopUp: React.FC<CreateNewBookingPopUpProps> = ({
                     >
                         Hinzufügen</button>
                 </form>
+            </div>
+
+            <div className="p-5 max-w-[500px] w-full rounded-xl secondary-background-color flex flex-col gap-5">
+                {/* Titel */}
+                <div className="flex flex-row justify-between">
+                    <div className="flex gap-2 items-center">
+                        <i className="fa-solid fa-copy text-3xl primary-background-textcolor"></i>
+                        <h1 className="text-3xl primary-background-textcolor font-semibold">Durchgeführte Buchungen</h1>
+                    </div>
+                </div>
+                {/* Searching Booking Feature */}
+                <div className="flex flex-col gap-2">
+                    <input type="text" placeholder="Suche nach durchgeführte Buchungen" className="p-3 text-md rounded bg-white" />
+                    <section className="flex flex-col gap-2">
+                        <div className="flex flex-row justify-between bg-white p-3 rounded-md">
+                            <h1 className="">Titel Kategorie</h1>
+                            <button className="cursor-pointer">
+                                <i className="fa-solid fa-copy"></i>
+                            </button>
+                        </div>
+                        <div className="flex flex-row justify-between bg-white p-3 rounded-md">
+                            <h1 className="">Titel Kategorie</h1>
+                            <button className="cursor-pointer">
+                                <i className="fa-solid fa-copy"></i>
+                            </button>
+                        </div>
+                        <div className="flex flex-row justify-between bg-white p-3 rounded-md">
+                            <h1 className="">Titel Kategorie</h1>
+                            <button className="cursor-pointer">
+                                <i className="fa-solid fa-copy"></i>
+                            </button>
+                        </div>
+                    </section>
+                </div>
             </div>
         </div>
     )
