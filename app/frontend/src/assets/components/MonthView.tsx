@@ -7,20 +7,20 @@ import {
   Line,
   XAxis,
   YAxis,
-  Tooltip,
   Legend,
   CartesianGrid,
-  ResponsiveContainer,
-  BarChart,
-  Bar,
   PieChart,
   Pie,
   Cell,
+  Tooltip,
+  ResponsiveContainer,
+  Sector
 } from "recharts";
 
 function MonthView() {
   const location = useLocation();
   const { month_id } = location.state || {};
+  const { monthName } = location.state || {};
   const backendUrl = "http://localhost:8000";
   const navigate = useNavigate();
   const [selectedTitle, setSelectedTitle] = useState("");
@@ -222,6 +222,28 @@ function MonthView() {
     return `hsl(${h}, ${s}%, ${l}%)`;
   }
 
+  const renderCustomizedLabel = ({
+    cx, cy, midAngle, innerRadius, outerRadius, percent
+  }: any) => {
+    const RADIAN = Math.PI / 180;
+    const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
+    const x = cx + radius * Math.cos(-midAngle * RADIAN);
+    const y = cy + radius * Math.sin(-midAngle * RADIAN);
+
+    return (
+      <text
+        x={x}
+        y={y}
+        fill="black"
+        textAnchor={x > cx ? "start" : "end"}
+        dominantBaseline="central"
+        className="text-xs font-semibold"
+      >
+        {`${(percent * 100).toFixed(0)}%`}
+      </text>
+    );
+  };
+
   if (loading) {
     return (
       <div className="flex justify-center items-center h-screen text-lg">
@@ -239,29 +261,179 @@ function MonthView() {
   }
 
   return (
-    <main className="flex flex-row h-full w-full bg-sky-300">
+    <main className="flex flex-row h-full w-full primary-background-color">
+
+      {/* Navigation Section */}
+      <section className="w-1/4 flex flex-col h-full secondary-background-color shadow-2xl">
+
+        {/* Banner Image */}
+        <img src="/images/XRBT-Banner.png" alt="XRBT-Banner" className='w-full' />
+
+        <section className="w-full h-full max-h-full overflow-y-auto flex flex-col p-5 gap-3">
+          {/* Umsatz anzeige */}
+          <div className="w-full rounded-md p-3 flex justify-between items-center primary-background-color">
+            <h2 className="text-2xl text-white font-semibold">Umsatz</h2>
+            <p
+              className={`text-xl font-bold p-2 rounded ${totalIncomes + totalOutgoings >= 0
+                ? "bg-emerald-50 text-emerald-600"
+                : "bg-red-100 text-red-600"
+                }`}
+            >
+              {(totalIncomes + totalOutgoings).toFixed(2)} CHF
+            </p>
+          </div>
+          {/* Spezifische Suche Ausgaben */}
+          <div className="w-full p-3 rounded-md flex flex-col primary-background-color gap-2">
+            <div className="justify-between items-center flex">
+              <h2 className="text-2xl text-white font-semibold">Kategorische Suche</h2>
+              {/* On Typing Searching for Betrag nach .titel  */}
+              <select
+                value={selectedTitle}
+                onChange={(e) => setSelectedTitle(e.target.value)}
+                className="p-2 bg-white rounded border border-gray-300 "
+              >
+                <option value="">Titel auswählen</option>
+                {uniqueOutgoingTitles.map((title, index) => (
+                  <option key={index} value={title}>
+                    {title}
+                  </option>
+                ))}
+              </select>
+            </div>
+            {selectedTitle && (
+              <div className="flex justify-between items-center p-2 rounded-md bg-white">
+                {filteredOutgoings.length > 0 ? (
+                  <>
+                    <h2 className="text-2xl primary-background-textcolor font-semibold">{selectedTitle}</h2>
+                    <p className={`text-xl font-semibold p-2 rounded bg-red-100 text-red-600`}>
+                      {filteredTotal.toFixed(2)} CHF
+                    </p>
+                  </>
+                ) : (
+                  <p className="text-gray-500">Keine Ausgaben gefunden.</p>
+                )}
+              </div>
+            )}
+          </div>
+
+          {/* Visuelle Statistik Verlauf im Monat */}
+          <div className="w-full p-3 flex flex-col primary-background-color rounded-md gap-2">
+            <h2 className="text-2xl text-white font-semibold">Monatsverlauf</h2>
+            <div className="h-[250px]">
+              <ResponsiveContainer width="100%" height="100%" className="bg-white p-3 rounded-md" >
+                <LineChart data={chartData}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="datum" />
+                  <YAxis />
+                  <Tooltip />
+                  <Legend />
+                  <Line
+                    type="monotone"
+                    dataKey="einnahmen"
+                    stroke="#82ca9d"
+                    name="Einnahmen"
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="ausgaben"
+                    stroke="#ff6961"
+                    name="Ausgaben"
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+
+          {/* Visuelle Statistik prozentualer Kuchen */}
+          <div className="w-full p-3 rounded-md flex flex-col primary-background-color gap-2">
+            <h2 className="text-2xl text-white font-semibold">Ausgaben Prozentual</h2>
+            <div className="h-[250px]">
+              <ResponsiveContainer width="100%" height="100%" className="bg-white p-3 rounded-md">
+                <PieChart>
+                  <Pie
+                    data={pieChartData}
+                    dataKey="value"
+                    nameKey="name"
+                    cx="50%"
+                    cy="50%"
+                    outerRadius={80}
+                    label={renderCustomizedLabel}
+                  >
+                    {pieChartData.map((entry, index) => (
+                      <Cell
+                        key={`cell-${index}`}
+                        fill={stringToRandomPastelColor(entry.name)}
+                      />
+                    ))}
+                  </Pie>
+                  <Tooltip formatter={(value: number) => `${value.toFixed(2)} CHF`} />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+        </section>
+
+        {/* Create Tool */}
+        <section className="w-full h-[100px] p-5 flex flex-row gap-5 items-center justify-center">
+          <button
+            className="px-5 h-fit w-full py-2 rounded-md cursor-pointer text-white text-xl font-semibold primary-background-color"
+            onClick={handleAddBookingClick}
+          >
+            Neue Buchung erstellen
+          </button>
+        </section>
+
+      </section>
+
       {/* Dashboard */}
-      <section className="w-2/3 flex flex-col justify-center items-center px-20 py-5 gap-5">
-        {/* Einnahmen */}
-        <div className="flex gap-5 w-full">
-          <div className="relative overflow-x-auto shadow-md sm:rounded-lg w-full h-fit">
-            <table className="w-full text-sm text-left rtl:text-right text-gray-500">
-              <caption className="p-5 text-lg font-semibold text-left rtl:text-right text-gray-900 bg-white">
-                Einnahmen
-                <p className="mt-1 text-sm font-normal text-gray-500">
-                  Diese Liste beinhaltet alle Einnahmen diesen Monats
-                </p>
-              </caption>
+      <aside className='flex flex-col gap-5 w-3/4 p-10'>
+
+        {/* Namespace Section */}
+        <section className='flex flex-row justify-between items-center'>
+          <h1 className='text-4xl text-white font-semibold'>{monthName}</h1>
+          {/* Return Button */}
+          <button
+            className="secondary-background-color text-md aspect-square w-[50px] rounded-xl cursor-pointer flex items-center justify-center"
+            onClick={goBack}
+          >
+            <i className="fa-solid fa-xmark primary-background-textcolor text-3xl"></i>
+          </button>
+        </section>
+
+        <section className='flex gap-5'>
+          <div className='flex flex-col gap-2 p-3 secondary-background-color w-full h-fit rounded-md'>
+            <div className='flex flex-row gap-2 w-full items-center'>
+              <i className="fa-solid fa-piggy-bank text-3xl primary-background-textcolor"></i>
+              <h1 className='text-3xl font-semibold primary-background-textcolor'>Einnahmen</h1>
+            </div>
+            <div className='bg-emerald-50 text-emerald-600 text-center text-3xl font-semibold p-3 rounded-md'>
+              +{totalIncomes} CHF
+            </div>
+          </div>
+          <div className='flex flex-col gap-2 p-3 secondary-background-color w-full h-fit rounded-md'>
+            <div className='flex flex-row gap-2 w-full items-center'>
+              <i className="fa-solid fa-cart-shopping text-3xl primary-background-textcolor"></i>
+              <h1 className='text-3xl font-semibold primary-background-textcolor'>Ausgaben</h1>
+            </div>
+            <div className='bg-red-50 text-red-600 text-center text-3xl font-semibold p-3 rounded-md'>
+              {totalOutgoings} CHF
+            </div>
+          </div>
+        </section>
+
+        {/* Tables Section */}
+        <section className='flex gap-5'>
+
+          {/* Einnahmen */}
+          <div className="relative overflow-x-auto shadow-md sm:rounded-lg w-full h-fit p-3 secondary-background-color">
+            <table className="w-full text-sm text-left rtl:text-right text-gray-500 rounded-md overflow-hidden">
               <thead className="text-xs text-gray-700 uppercase bg-green-100">
                 <tr>
                   <th className="px-6 py-3">Datum</th>
                   <th className="px-6 py-3">Titel</th>
                   <th className="px-6 py-3">Betrag</th>
                   <th className="px-6 py-3">
-                    <span className="sr-only">Edit</span>
-                  </th>
-                  <th className="px-6 py-3">
-                    <span className="sr-only">Delete</span>
+                    <span className="sr-only">Aktionen</span>
                   </th>
                 </tr>
               </thead>
@@ -282,22 +454,20 @@ function MonthView() {
                           {parseFloat(item.betrag).toFixed(2)} CHF
                         </td>
                         <td className="px-6 py-4 text-right">
-                          <button
-                            onClick={() => handleEditBookingClick(item)}
-                            className="font-medium text-blue-600 hover:underline"
-                          >
-                            Edit
-                          </button>
-                        </td>
-                        <td className="px-6 py-4 text-right">
-                          <button
-                            onClick={() =>
-                              handleDeleteBookingClick(item.buchung_id)
-                            }
-                            className="font-medium text-blue-600 hover:underline"
-                          >
-                            Delete
-                          </button>
+                          <div className="flex gap-5 justify-end">
+                            <button
+                              onClick={() => handleEditBookingClick(item)}
+                              className="font-medium text-green-800 hover:underline cursor-pointer"
+                            >
+                              <i className="fa-solid fa-pen"></i>
+                            </button>
+                            <button
+                              onClick={() => handleDeleteBookingClick(item.buchung_id)}
+                              className="font-medium text-green-800 hover:underline cursor-pointer"
+                            >
+                              <i className="fa-solid fa-trash"></i>
+                            </button>
+                          </div>
                         </td>
                       </tr>
                     );
@@ -317,24 +487,15 @@ function MonthView() {
           </div>
 
           {/* Ausgaben */}
-          <div className="relative overflow-x-auto shadow-md sm:rounded-lg w-full h-fit">
-            <table className="w-full text-sm text-left rtl:text-right text-gray-500">
-              <caption className="p-5 text-lg font-semibold text-left rtl:text-right text-gray-900 bg-white">
-                Ausgaben
-                <p className="mt-1 text-sm font-normal text-gray-500">
-                  Diese Liste beinhaltet alle Ausgaben diesen Monats
-                </p>
-              </caption>
+          <div className="relative overflow-x-auto shadow-md sm:rounded-lg w-full h-fit p-3 secondary-background-color">
+            <table className="w-full text-sm text-left rtl:text-right text-gray-500 rounded-md overflow-hidden">
               <thead className="text-xs text-gray-700 uppercase bg-red-100">
                 <tr>
                   <th className="px-6 py-3">Datum</th>
                   <th className="px-6 py-3">Titel</th>
                   <th className="px-6 py-3">Betrag</th>
                   <th className="px-6 py-3">
-                    <span className="sr-only">Edit</span>
-                  </th>
-                  <th className="px-6 py-3">
-                    <span className="sr-only">Delete</span>
+                    <span className="sr-only">Aktionen</span>
                   </th>
                 </tr>
               </thead>
@@ -352,20 +513,20 @@ function MonthView() {
                           {parseFloat(item.betrag).toFixed(2)} CHF
                         </td>
                         <td className="px-6 py-4 text-right">
-                          <button
-                            onClick={() => handleEditBookingClick(item)}
-                            className="font-medium text-blue-600 hover:underline"
-                          >
-                            Edit
-                          </button>
-                        </td>
-                        <td className="px-6 py-4 text-right">
-                          <button
-                            onClick={() => handleDeleteBookingClick(item.buchung_id)}
-                            className="font-medium text-blue-600 hover:underline"
-                          >
-                            Delete
-                          </button>
+                          <div className="flex gap-5 justify-end">
+                            <button
+                              onClick={() => handleEditBookingClick(item)}
+                              className="font-medium text-red-800 hover:underline cursor-pointer"
+                            >
+                              <i className="fa-solid fa-pen"></i>
+                            </button>
+                            <button
+                              onClick={() => handleDeleteBookingClick(item.buchung_id)}
+                              className="font-medium text-red-800 hover:underline cursor-pointer"
+                            >
+                              <i className="fa-solid fa-trash"></i>
+                            </button>
+                          </div>
                         </td>
                       </tr>
                     );
@@ -383,142 +544,9 @@ function MonthView() {
               </tbody>
             </table>
           </div>
-        </div>
-        <div className="flex gap-5 w-full">
-          <div className="flex gap-2 w-full shadow-md sm:rounded-lg bg-green-100 p-5">
-            <p className="mt-1 text-xl font-bold text-gray-700">
-              Total Einnahmen: {totalIncomes.toFixed(2)} CHF
-            </p>
-          </div>
-          <div className="flex gap-2 w-full shadow-md sm:rounded-lg bg-red-100 p-5">
-            <p className="mt-1 text-xl font-bold text-gray-700">
-              Total Ausgaben: {totalOutgoings.toFixed(2)} CHF
-            </p>
-          </div>
-        </div>
-      </section>
 
-      {/* Monate Navigation oder Detailanzeige */}
-      <section className="w-1/3 flex flex-col justify-between gap-10 items-center h-full rounded-l-2xl overflow-auto bg-white p-5">
-        {/* Platz für weitere Inhalte */}
-        <div className="flex flex-col gap-5 w-full">
-          <h1 className="text-4xl font-bold border-b border-gray-300 pb-2">
-            Statistik des Monats
-          </h1>
-          {/* Umsatz anzeige */}
-          <div className="border border-gray-200 w-full rounded-md p-5 flex justify-between items-center">
-            <h2 className="text-2xl">Umsatz:</h2>
-            <p
-              className={`text-xl font-bold p-2 rounded ${
-                totalIncomes + totalOutgoings >= 0
-                  ? "bg-green-200 text-green-800"
-                  : "bg-red-200 text-red-800"
-              }`}
-            >
-              {(totalIncomes + totalOutgoings).toFixed(2)}
-            </p>
-          </div>
-          {/* Spezifische Suche Ausgaben */}
-          <div className="border border-gray-200 w-full p-5 rounded-md flex flex-col">
-            <div className="justify-between items-center flex">
-              <h2 className="text-2xl">Kategorische Suche:</h2>
-              {/* On Typing Searching for Betrag nach .titel  */}
-              <select
-                value={selectedTitle}
-                onChange={(e) => setSelectedTitle(e.target.value)}
-                className="p-2 rounded border border-gray-300 "
-              >
-                <option value="">Titel auswählen</option>
-                {uniqueOutgoingTitles.map((title, index) => (
-                  <option key={index} value={title}>
-                    {title}
-                  </option>
-                ))}
-              </select>
-            </div>
-            {selectedTitle && (
-              <div className="flex justify-between items-center mt-5 pt-5 border-t border-gray-200">
-                {filteredOutgoings.length > 0 ? (
-                  <>
-                    <h2 className="text-2xl">{selectedTitle}: </h2>
-                    <p className={`text-xl font-bold p-2 rounded bg-red-200`}>
-                      {filteredTotal.toFixed(2)} CHF
-                    </p>
-                  </>
-                ) : (
-                  <p className="text-gray-500">Keine Ausgaben gefunden.</p>
-                )}
-              </div>
-            )}
-          </div>
-
-          {/* Visuelle Statistik Verlauf im Monat */}
-          <div className="w-full h-[250px] p-5 border border-gray-200 rounded flex flex-col">
-            <h2 className="text-2xl mb-5">Monatsverlauf:</h2>
-            <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={chartData}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="datum" />
-                <YAxis />
-                <Tooltip />
-                <Legend />
-                <Line
-                  type="monotone"
-                  dataKey="einnahmen"
-                  stroke="#82ca9d"
-                  name="Einnahmen"
-                />
-                <Line
-                  type="monotone"
-                  dataKey="ausgaben"
-                  stroke="#ff6961"
-                  name="Ausgaben"
-                />
-              </LineChart>
-            </ResponsiveContainer>
-          </div>
-
-          {/* Visuelle Statistik prozentualer Kuchen */}
-          <div className="w-full h-[250px] p-5 border border-gray-200 rounded flex flex-col">
-            <h2 className="text-2xl mb-5">Ausgaben Prozentual:</h2>
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie
-                  data={pieChartData}
-                  dataKey="value"
-                  nameKey="name"
-                  cx="50%"
-                  cy="50%"
-                  outerRadius={80}
-                  label
-                >
-                  {pieChartData.map((entry, index) => (
-                    <Cell
-                      key={`cell-${index}`}
-                      fill={stringToRandomPastelColor(entry.name)}
-                    />
-                  ))}
-                </Pie>
-                <Tooltip />
-              </PieChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
-        <button
-          className="shadow-xl px-5 h-fit w-3/5 py-2 bg-sky-300 rounded-md  cursor-pointer text-white font-semibold"
-          onClick={handleAddBookingClick}
-        >
-          Neue Buchung hinzufügen
-        </button>
-      </section>
-
-      {/* Zurück-Button */}
-      <button
-        className="fixed top-5 left-5 bg-white text-md aspect-square w-[40px] rounded-xl cursor-pointer flex items-center justify-center"
-        onClick={goBack}
-      >
-        <i className="fa-solid fa-xmark text-sky-400 text-2xl"></i>
-      </button>
+        </section>
+      </aside>
 
       {displayNewBookingPopUp && (
         <CreateNewBookingPopUp

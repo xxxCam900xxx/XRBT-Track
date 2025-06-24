@@ -41,9 +41,9 @@ function BudgetPlanView() {
 
   const goBack = () => navigate(-1);
 
-  const navigateToMonth = (id: string) => {
+  const navigateToMonth = (id: string, name: string) => {
     navigate("/plan/month", {
-      state: { month_id: id },
+      state: { month_id: id, monthName: name },
     });
   };
 
@@ -195,10 +195,10 @@ function BudgetPlanView() {
               <div
                 key={month.monat_id}
                 className="p-2 rounded-md cursor-pointer flex flex-row gap-5 items-center justify-between primary-background-color"
-                onClick={() => navigateToMonth(month.monat_id)}
+                onClick={() => navigateToMonth(month.monat_id, month.monat_name)}
               >
                 <h3 className="text-2xl text-white font-semibold">{month.monat_name}</h3>
-                <p className={`${parseFloat(month.total_umsatz) < 0 ? 'bg-red-50 text-red-600' : 'bg-emerald-50 text-emerald-600'
+                <p className={`${parseFloat(month.total_umsatz) < 0 ? 'bg-red-100 text-red-600' : 'bg-emerald-50 text-emerald-600'
                   } p-2 rounded-md w-[150px] text-center text-lg font-medium`}>{month.total_umsatz} CHF</p>
               </div>
             );
@@ -209,7 +209,7 @@ function BudgetPlanView() {
       {/* Dashboard Section */}
       <aside className='flex flex-col gap-5 w-3/4 p-10'>
 
-        {/* Namespace */}
+        {/* Namespace Section */}
         <section className='flex flex-row justify-between items-center'>
           <h1 className='text-4xl text-white font-semibold'>{budget_name}</h1>
           {/* Return Button */}
