@@ -41,9 +41,9 @@ function BudgetPlanView() {
 
   const goBack = () => navigate(-1);
 
-  const navigateToMonth = (id: string, name: string) => {
+  const navigateToMonth = (id: string, name: string, startDate: string) => {
     navigate("/plan/month", {
-      state: { month_id: id, monthName: name },
+      state: { month_id: id, monthName: name, monthStart: startDate},
     });
   };
 
@@ -195,7 +195,7 @@ function BudgetPlanView() {
               <div
                 key={month.monat_id}
                 className="p-2 rounded-md cursor-pointer flex flex-row gap-5 items-center justify-between primary-background-color"
-                onClick={() => navigateToMonth(month.monat_id, month.monat_name)}
+                onClick={() => navigateToMonth(month.monat_id, month.monat_name, month.start_datum)}
               >
                 <h3 className="text-2xl text-white font-semibold">{month.monat_name}</h3>
                 <p className={`${parseFloat(month.total_umsatz) < 0 ? 'bg-red-100 text-red-600' : 'bg-emerald-50 text-emerald-600'

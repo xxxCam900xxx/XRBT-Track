@@ -21,6 +21,7 @@ function MonthView() {
   const location = useLocation();
   const { month_id } = location.state || {};
   const { monthName } = location.state || {};
+  const { monthStart } = location.state || {};
   const backendUrl = "http://localhost:8000";
   const navigate = useNavigate();
   const [selectedTitle, setSelectedTitle] = useState("");
@@ -124,7 +125,7 @@ function MonthView() {
     setCurrentBooking({
       buchung_id: "",
       titel: "",
-      datum: "",
+      datum: monthStart,
       betrag: "",
       typ: "",
       monat_id: month_id,
