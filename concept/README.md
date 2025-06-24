@@ -2,8 +2,8 @@
 Die XRBT App hat folgenden nützen, es wird ein kleines Nebenprojekt welches mir React und Python + Flask besser beibringt und neben bei mir eine App bauen welche mir helfen wird meine Budget pro Jahr einsehen zu können.
 
 ### XRBT - Anforderungen
-- [ ] Einnahmen hinzufügen können
-- [ ] Ausgaben hinzufügen können
+- [x] Einnahmen hinzufügen können
+- [x] Ausgaben hinzufügen können
 - [ ] Meinen Verlauf einlesen können
 - [ ] Eine Visuelle Statistik haben
 - [ ] Filtern nach Betrag, Kategorie, Zeitspann und mehr
@@ -25,4 +25,4 @@ Die XRBT App hat folgenden nützen, es wird ein kleines Nebenprojekt welches mir
 --> [Klicken Sie hier, um mehr zu erfahren](./database/README.md) <--
 
 ### XRBT - Logo
-![XRBT-Track Logo](./XRBT-Track%20Logo.png)
+![](./images/XRBT-Logo.png)
