@@ -141,7 +141,6 @@ const CreateNewBookingPopUp: React.FC<CreateNewBookingPopUpProps> = ({
             ...prev,
             titel: template.titel,
             typ: template.typ,
-            betrag: template.betrag.toString(),
         }));
     };
 
@@ -278,10 +277,9 @@ const CreateNewBookingPopUp: React.FC<CreateNewBookingPopUpProps> = ({
                             <table className="w-full text-sm text-left">
                                 <thead className="text-xs text-white primary-background-color uppercase">
                                     <tr>
-                                        <th scope="col" className="px-6 py-3">Titel</th>
-                                        <th scope="col" className="px-6 py-3">Typ</th>
-                                        <th scope="col" className="px-6 py-3">Betrag</th>
-                                        <th scope="col" className="px-6 py-3 text-right">Aktionen</th>
+                                        <th scope="col" className="px-5 py-2">Titel</th>
+                                        <th scope="col" className="px-5 py-2">Typ</th>
+                                        <th scope="col" className="px-5 py-2 text-right">Aktionen</th>
                                     </tr>
                                 </thead>
                             </table>
@@ -300,7 +298,6 @@ const CreateNewBookingPopUp: React.FC<CreateNewBookingPopUpProps> = ({
                                             >
                                                 <td className="p-5 font-medium">{template.titel}</td>
                                                 <td className="p-5 capitalize">{template.typ}</td>
-                                                <td className="p-5">{parseFloat(template.betrag).toFixed(2)} CHF</td>
                                                 <td className="p-5 text-right flex gap-3 items-center justify-end">
                                                     <button
                                                         className="cursor-pointer"
