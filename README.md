@@ -9,8 +9,8 @@ Ein einfacher Budget-Tracker mit grossem Funktionsumfang, der sich durch eine ei
 ## Wie starte ich das Projekt mit Docker?
 --> [Klicken Sie hier, um mehr zu erfrahren](./docker/README.md) <--
 
-## Figma Design
---> [Klicken Sie hier, um mehr zu erfahren](https://www.figma.com/design/3pk8y0QeCmWFo15dD79rdp/React-Buget-Tracker?node-id=0-1&p=f&t=DNMcW30wSBmMJkzp-0) <--
+## Figma Design Dev
+--> [Klicken Sie hier, um mehr zu erfahren](https://embed.figma.com/design/3pk8y0QeCmWFo15dD79rdp/React-Buget-Tracker?node-id=0-1&embed-host=share) <--
 
 ## Projekt Kanban
 --> [Klicken Sie hier, um mehr zu erfahren](https://github.com/users/xxxCam900xxx/projects/9) <--
