@@ -34,50 +34,60 @@ const CreateNewBudgetPopUp: React.FC<CreateNewBudgetPopUpProps> = ({
         }
     };
 
+    const d = new Date();
+    let currentYear = d.getFullYear();
+
     if (!displayNewBudgetPopUp) return null;
 
     return (
         <div role="popUp"
             className="fixed top-0 left-0 w-full h-full flex items-center justify-center"
         >
-            <div className="absolute top-0 left-0 w-full h-full bg-white opacity-75 z-[-1]" onClick={() => setDisplayNewBudgetPopUp(false)} ></div>
-            {/* Close Button */}
-            <button
-                className="absolute top-10 right-10 bg-red-300 aspect-square w-15 rounded-md text-white bg-sky-300 cursor-pointer"
-                onClick={() => setDisplayNewBudgetPopUp(false)}><i className="fa-solid fa-xmark text-4xl"></i>
-            </button>
+            <div className="absolute top-0 left-0 w-full h-full primary-background-color opacity-50 z-[-1]" onClick={() => setDisplayNewBudgetPopUp(false)} ></div>
             {/* Create Budget Form */}
-            <div className="bg-white p-5 max-w-[500px] w-full rounded-xl">
+            <div className="p-5 max-w-[500px] w-full rounded-md flex flex-col gap-2 secondary-background-color">
+                {/* Titel */}
+                <div className="flex flex-row justify-between">
+                    <div className="flex gap-2 items-center">
+                        <i className="fa-solid fa-signature text-3xl primary-background-textcolor"></i>
+                        <label
+                            htmlFor="titel"
+                            className="text-3xl primary-background-textcolor font-semibold"
+                        >
+                            Budgetname:
+                        </label>
+                    </div>
+                    {/* Close Button */}
+                    <button
+                        className="aspect-square cursor-pointer"
+                        onClick={() => setDisplayNewBudgetPopUp(false)}><i className="fa-solid fa-xmark text-4xl primary-background-textcolor"></i>
+                    </button>
+                </div>
                 <form
                     onSubmit={(e) => {
                         e.stopPropagation();
                         createNewBudget();
                     }}
-                    className="flex flex-col gap-5"
+                    className="flex flex-col gap-2"
                 >
                     <div className="flex flex-col gap-2">
-                        <label
-                            htmlFor="titel"
-                            className="text-2xl"
-                        >
-                            Wie heisst der neue Plan?
-                        </label>
                         <input
                             id="titel"
                             type="text"
-                            placeholder="Budget - 0000"
-                            className="p-2 border border-sky-300 rounded-md"
+                            placeholder={`Budget - ${currentYear}`}
+                            className="p-3 bg-white text-lg rounded-md"
                             value={formData.titel}
                             onChange={(e) => setFormData({ ...formData, titel: e.target.value })}
                             autoFocus
+                            required
                         />
 
                     </div>
                     <button
                         type="submit"
-                        className="bg-sky-300 text-white text-xl p-2 rounded-lg cursor-pointer"
+                        className="text-white text-xl p-3 rounded-lg cursor-pointer primary-background-color"
                     >
-                        Create new Budget</button>
+                        Hinzufügen</button>
                 </form>
             </div>
         </div>
