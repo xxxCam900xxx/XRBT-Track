@@ -4,16 +4,16 @@ Die XRBT App hat folgenden nützen, es wird ein kleines Nebenprojekt welches mir
 ### XRBT - Anforderungen
 - [x] Einnahmen hinzufügen können
 - [x] Ausgaben hinzufügen können
-- [ ] Meinen Verlauf einlesen können
-- [ ] Eine Visuelle Statistik haben
+- [x] Meinen Verlauf einlesen können
+- [x] Eine Visuelle Statistik haben
 - [ ] Filtern nach Betrag, Kategorie, Zeitspann und mehr
 - [ ] Dashboard mit allen Wichitgen Statisiken haben
-- [ ] Neue Kategorien erstellen können
-- [ ] Presets erstellen können, um schneller einnahemn ausfüllen könnne.
-- [ ] Date Picker einbauen
+- [x] Neue Kategorien erstellen können
+- [x] Presets erstellen können, um schneller einnahemn ausfüllen könnne.
+- [x] Date Picker einbauen
 - [ ] CSV Import und Export sollte möglich sein
-- [ ] Budget Pro Jahr erstellen können (Ordner)
-  - [ ] Jeder Budget Ordner hat 12 Monate direkt eingebaut
+- [x] Budget Pro Jahr erstellen können (Ordner)
+  - [x] Jeder Budget Ordner hat 12 Monate direkt eingebaut
 
 ### XRBT - Enviroment
 - **Frontend** (React)
