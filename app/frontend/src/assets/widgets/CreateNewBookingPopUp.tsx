@@ -91,77 +91,85 @@ const CreateNewBookingPopUp: React.FC<CreateNewBookingPopUpProps> = ({
         <div role="popUp"
             className="fixed top-0 left-0 w-full h-full flex items-center justify-center"
         >
-            <div className="absolute top-0 left-0 w-full h-full bg-white opacity-75 z-[-1]" onClick={() => setDisplayNewBookingPopUp(false)} ></div>
-            {/* Close Button */}
-            <button
-                className="absolute top-10 right-10 bg-red-300 aspect-square w-15 rounded-md text-white bg-sky-300 cursor-pointer"
-                onClick={() => setDisplayNewBookingPopUp(false)}><i className="fa-solid fa-xmark text-4xl"></i>
-            </button>
-            {/* Create Booking Form */}
-            <div className="bg-white p-5 max-w-[500px] w-full rounded-xl">
+            <div className="absolute top-0 left-0 w-full h-full primary-background-color opacity-50 z-[-1]" onClick={() => setDisplayNewBookingPopUp(false)} ></div>
+
+            <div className="p-5 max-w-[500px] w-full rounded-xl secondary-background-color flex flex-col gap-2">
+                {/* Titel */}
+                <div className="flex flex-row justify-between">
+                    <div className="flex gap-2 items-center">
+                        <i className="fa-solid fa-signature text-3xl primary-background-textcolor"></i>
+                        <h1 className="text-3xl primary-background-textcolor font-semibold">Neue Buchung</h1>
+                    </div>
+                    {/* Close Button */}
+                    <button
+                        className="aspect-square cursor-pointer"
+                        onClick={() => setDisplayNewBookingPopUp(false)}><i className="fa-solid fa-xmark text-4xl primary-background-textcolor"></i>
+                    </button>
+                </div>
+                {/* Form */}
                 <form
                     onSubmit={(e) => {
                         e.stopPropagation();
                         e.preventDefault();
                         createNewBooking();
                     }}
-                    className='flex flex-col gap-5 items-center'
+                    className='flex flex-col gap-2 items-center'
                 >
-                    <h1 className='text-4xl font-bold  w-full'>Form</h1>
                     <div className="formgroup flex flex-col w-full">
-                        <label htmlFor="date">Datum</label>
+                        <label htmlFor="date" className="text-xl primary-background-textcolor">Datum</label>
                         <input
                             type="date"
                             name='date'
                             id='date'
-                            className='border rounded-md p-2'
+                            className='rounded-md p-3 bg-white seconard-background-text-color'
                             value={formData.datum || booking.datum}
                             onChange={(e) => setFormData({ ...formData, datum: e.target.value })}
                             autoFocus
                         />
                     </div>
                     <div className="formgroup flex flex-col w-full">
-                        <label htmlFor="typ">Typ</label>
+                        <label htmlFor="typ" className="text-xl primary-background-textcolor">Typ</label>
                         <select
                             name="typ"
                             id="typ"
-                            className='border rounded-md p-2'
+                            className='rounded-md p-3 bg-white seconard-background-text-color'
                             value={formData.typ || booking.typ}
                             onChange={(e) => setFormData({ ...formData, typ: e.target.value })}
                         >
-                            <option value="" disabled></option>
+                            <option value="" disabled>Bitte wähle einen Typ</option>
                             <option value="einnahme">Einnahme</option>
                             <option value="ausgabe">Ausgabe</option>
                         </select>
                     </div>
                     <div className="formgroup flex flex-col w-full">
-                        <label htmlFor="title">Titel</label>
+                        <label htmlFor="title" className="text-xl primary-background-textcolor">Titel / Kategorie</label>
                         <input
                             type="text"
                             name='title'
                             id='title'
-                            className='border rounded-md p-2'
+                            placeholder="Bitte geben Sie einen Titel / Katgegorie ein"
+                            className='rounded-md p-3 bg-white seconard-background-text-color'
                             value={formData.titel || booking.titel}
                             onChange={(e) => setFormData({ ...formData, titel: e.target.value })}
                         />
                     </div>
                     <div className="formgroup flex flex-col w-full">
-                        <label htmlFor="amount">Betrag</label>
+                        <label htmlFor="amount" className="text-xl primary-background-textcolor">Betrag</label>
                         <input
                             type="number"
                             name='amount'
                             id='amount'
-                            className='border rounded-md p-2'
+                            placeholder="Bitte geben Sie einen Betrag ein"
+                            className='rounded-md p-3 bg-white seconard-background-text-color'
                             value={formData.betrag || booking.betrag}
                             onChange={(e) => setFormData({ ...formData, betrag: e.target.value })}
                         />
                     </div>
                     <button
                         type="submit"
-                        className="bg-sky-300 text-white text-xl p-2 rounded-lg cursor-pointer"
+                        className="text-white text-xl p-3 w-full rounded-lg cursor-pointer primary-background-color"
                     >
-                        Hinzufügen
-                    </button>
+                        Hinzufügen</button>
                 </form>
             </div>
         </div>
