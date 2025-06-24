@@ -34,7 +34,6 @@ CREATE TABLE Template (
     template_id SERIAL PRIMARY KEY,
     typ VARCHAR(10) CHECK (typ IN ('einnahme', 'ausgabe')) NOT NULL,
     titel TEXT NOT NULL,
-    datum DATE NOT NULL,
     betrag NUMERIC(10, 2) NOT NULL
 );
 
@@ -57,3 +56,10 @@ VALUES
     (1, 'ausgabe', 'Ausgabe A', '2025-01-03', -300),
     (1, 'einnahme', 'Einnahme C', '2025-01-04', 300),
     (1, 'ausgabe', 'Ausgabe B', '2025-01-05', -1000);
+
+INSERT INTO 
+    Template (template_id, typ, titel, betrag)
+VALUES 
+    (1, 'einnahme', 'Lohn', 200),
+    (2, 'einnahme', 'Twitch', 50),
+    (3, 'ausgabe', 'Active Fitness', -300);
