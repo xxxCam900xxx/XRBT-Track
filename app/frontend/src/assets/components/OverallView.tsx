@@ -97,16 +97,22 @@ function OverallView() {
               onClick={() => handleClickBudgetPlan(budget.budget_id, budget.titel)}
             >
               <h1 className="text-2xl text-white font-semibold">{budget.titel}</h1>
-              <button
-                className="bg-white text-md aspect-square w-[40px] rounded-xl cursor-pointer"
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  deleteBudgetById(budget.budget_id);
-                }}
-              >
-                <i className="fa-solid fa-trash text-lg primary-background-textcolor"></i>
-              </button>
+              <div className='flex flex-row gap-2'>
+                <div className={`${parseFloat(budget.total_umsatz) < 0 ? 'bg-red-50 text-red-600' : 'bg-emerald-50 text-emerald-600'
+                  } font-semibold p-2 w-[100px] text-center rounded-md`}>
+                  {budget.total_umsatz} CHF
+                </div>
+                <button
+                  className="bg-white text-md aspect-square w-[40px] rounded-xl cursor-pointer"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    deleteBudgetById(budget.budget_id);
+                  }}
+                >
+                  <i className="fa-solid fa-trash text-lg primary-background-textcolor"></i>
+                </button>
+              </div>
             </div>
           ))}
         </section>
