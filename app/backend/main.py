@@ -4,6 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from router.budget import router as budget_router
 from router.month import router as month_router
 from router.booking import router as booking_router
+from router.template import router as template_router
 
 app = FastAPI()
 
@@ -31,3 +32,4 @@ async def read_root():
 app.include_router(budget_router)
 app.include_router(month_router)
 app.include_router(booking_router)
+app.include_router(template_router)

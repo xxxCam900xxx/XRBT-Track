@@ -56,7 +56,6 @@ class Template(Base):
     template_id = Column(Integer, primary_key=True)
     typ = Column(String(10), nullable=False)
     titel = Column(Text, nullable=False)
-    datum = Column(Date, nullable=False)
     betrag = Column(Numeric(10, 2), nullable=False)
 
     __table_args__ = (
