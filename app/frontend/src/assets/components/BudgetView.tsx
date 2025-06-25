@@ -207,7 +207,7 @@ function BudgetPlanView() {
       </section>
 
       {/* Dashboard Section */}
-      <aside className='flex flex-col gap-5 w-3/4 p-10'>
+      <aside className='flex flex-col gap-5 w-3/4 p-10 overflow-y-auto'>
 
         {/* Namespace Section */}
         <section className='flex flex-row justify-between items-center'>
