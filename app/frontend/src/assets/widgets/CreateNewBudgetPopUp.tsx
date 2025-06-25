@@ -9,8 +9,10 @@ const CreateNewBudgetPopUp: React.FC<CreateNewBudgetPopUpProps> = ({
     displayNewBudgetPopUp,
     setDisplayNewBudgetPopUp,
 }) => {
+    const d = new Date();
+    let currentYear = d.getFullYear().toString();
     const backendUrl = "http://localhost:8000"
-    const [formData, setFormData] = useState({ titel: "" });
+    const [formData, setFormData] = useState({ titel: "", jahr: currentYear });
 
     const createNewBudget = async () => {
         try {
@@ -19,7 +21,7 @@ const CreateNewBudgetPopUp: React.FC<CreateNewBudgetPopUpProps> = ({
                 headers: {
                     "Content-Type": "application/json"
                 },
-                body: JSON.stringify({ titel: formData.titel })
+                body: JSON.stringify({ titel: formData.titel, jahr: formData.jahr })
             });
 
             if (response.ok) {
@@ -34,14 +36,11 @@ const CreateNewBudgetPopUp: React.FC<CreateNewBudgetPopUpProps> = ({
         }
     };
 
-    const d = new Date();
-    let currentYear = d.getFullYear();
-
     if (!displayNewBudgetPopUp) return null;
 
     return (
         <div role="popUp"
-            className="fixed top-0 left-0 w-full h-full flex items-center justify-center"
+            className="fixed top-0 left-0 w-full h-full flex items-center justify-center z-100"
         >
             <div className="absolute top-0 left-0 w-full h-full primary-background-color opacity-50 z-[-1]" onClick={() => setDisplayNewBudgetPopUp(false)} ></div>
             {/* Create Budget Form */}
@@ -80,6 +79,17 @@ const CreateNewBudgetPopUp: React.FC<CreateNewBudgetPopUpProps> = ({
                             onChange={(e) => setFormData({ ...formData, titel: e.target.value })}
                             autoFocus
                             required
+                        />
+
+                    </div>
+                    <div className="flex flex-col gap-2">
+                        <input
+                            id="titel"
+                            type="number"
+                            placeholder={`${currentYear}`}
+                            className="p-3 bg-white text-lg rounded-md"
+                            value={formData.jahr}
+                            onChange={(e) => setFormData({ ...formData, jahr: e.target.value })}
                         />
 
                     </div>
