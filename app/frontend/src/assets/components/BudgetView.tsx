@@ -13,6 +13,7 @@ import {
 
 import { Month } from '../types/month';
 import { Booking } from '../types/booking';
+import ImportMonthsPopUp from '../widgets/ImportMonthsPopUp';
 
 const backendUrl = "http://localhost:8000";
 
@@ -112,6 +113,11 @@ const BudgetPlanView = () => {
     return `hsl(${h}, ${s}%, ${l}%)`;
   };
 
+  const [displayImportPopUp, setDisplayImportPopUp] = useState<boolean>(false);
+  const handleImportClick = () => {
+    setDisplayImportPopUp(true)
+  }
+
   useEffect(() => {
     if (!budget_id) return;
 
@@ -173,6 +179,26 @@ const BudgetPlanView = () => {
             </div>
           ))}
         </div>
+        <div className='secondary-background-color flex flex-row gap-2 p-5'>
+          <button
+            className="px-5 h-fit w-full py-2 rounded-md cursor-pointer text-white text-xl font-semibold primary-background-color"
+            onClick={handleImportClick}
+          >
+            Import
+          </button>
+          <button
+            className="px-5 h-fit w-full py-2 rounded-md cursor-pointer text-white text-xl font-semibold primary-background-color"
+          >
+            Export
+          </button>
+        </div>
+
+        {displayImportPopUp && (
+          <ImportMonthsPopUp
+            displayNewBudgetPopUp={displayImportPopUp}
+            setDisplayNewBudgetPopUp={setDisplayImportPopUp}
+          />
+        )}
       </section>
 
       {/* Dashboard */}
