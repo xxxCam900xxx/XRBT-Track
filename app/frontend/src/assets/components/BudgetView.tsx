@@ -138,41 +138,40 @@ const BudgetPlanView = () => {
     setDisplayImportPopUp(true)
   }
 
+  const loadData = async () => {
+    try {
+      const months = await fetchBudgets();
+      setMonths(months);
+
+      const totalIn = months.reduce((sum, m) => sum + parseFloat(m.total_einnahmen || '0'), 0);
+      const totalOut = months.reduce((sum, m) => sum + parseFloat(m.total_ausgaben || '0'), 0);
+
+      setTotalIncomes(totalIn);
+      setTotalOutgoings(totalOut);
+      setTotal(totalIn + totalOut);
+
+      await fetch(`${backendUrl}/budget/${budget_id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ total_einnahmen: totalIn, total_ausgaben: totalOut }),
+      });
+
+      const expenses = await fetchAmounts('ausgabe');
+      const { chartData, allTitles } = prepareCategoryChartData(expenses);
+
+      setGesamtLineChartData(buildTotalLineChartData(months));
+      setLineChartData(chartData);
+      setCategoryTitles(allTitles);
+    } catch (err: any) {
+      console.error("Fehler beim Laden:", err);
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
     if (!budget_id) return;
-
-    const loadData = async () => {
-      try {
-        const months = await fetchBudgets();
-        setMonths(months);
-
-        const totalIn = months.reduce((sum, m) => sum + parseFloat(m.total_einnahmen || '0'), 0);
-        const totalOut = months.reduce((sum, m) => sum + parseFloat(m.total_ausgaben || '0'), 0);
-
-        setTotalIncomes(totalIn);
-        setTotalOutgoings(totalOut);
-        setTotal(totalIn + totalOut);
-
-        await fetch(`${backendUrl}/budget/${budget_id}`, {
-          method: 'PATCH',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ total_einnahmen: totalIn, total_ausgaben: totalOut }),
-        });
-
-        const expenses = await fetchAmounts('ausgabe');
-        const { chartData, allTitles } = prepareCategoryChartData(expenses);
-
-        setGesamtLineChartData(buildTotalLineChartData(months));
-        setLineChartData(chartData);
-        setCategoryTitles(allTitles);
-      } catch (err: any) {
-        console.error("Fehler beim Laden:", err);
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     setLoading(true);
     loadData();
   }, [budget_id]);
@@ -218,6 +217,8 @@ const BudgetPlanView = () => {
           <ImportMonthsPopUp
             displayNewBudgetPopUp={displayImportPopUp}
             setDisplayNewBudgetPopUp={setDisplayImportPopUp}
+            budget_id={budget_id}
+            fetchBudgets={loadData}
           />
         )}
       </section>

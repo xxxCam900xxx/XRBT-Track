@@ -3,11 +3,15 @@ import React, { useState, DragEvent, ChangeEvent } from "react";
 interface ImportMonthsPopUpProps {
     displayNewBudgetPopUp: boolean;
     setDisplayNewBudgetPopUp: (value: boolean) => void;
+    budget_id: string;
+    fetchBudgets: () => void;
 }
 
 const ImportMonthsPopUp: React.FC<ImportMonthsPopUpProps> = ({
     displayNewBudgetPopUp,
     setDisplayNewBudgetPopUp,
+    budget_id,
+    fetchBudgets,
 }) => {
     const [file, setFile] = useState<File | null>(null);
     const [readyToUpload, setReadyToUpload] = useState<boolean>(false);
@@ -50,7 +54,7 @@ const ImportMonthsPopUp: React.FC<ImportMonthsPopUpProps> = ({
         formData.append("file", file);
 
         try {
-            const response = await fetch(`${backendUrl}/import`, {
+            const response = await fetch(`${backendUrl}/import/${budget_id}`, {
                 method: "POST",
                 body: formData,
             });
@@ -59,6 +63,7 @@ const ImportMonthsPopUp: React.FC<ImportMonthsPopUpProps> = ({
             if (!response.ok) throw new Error(result.detail || "Fehler beim Upload");
 
             setDisplayNewBudgetPopUp(false);
+            fetchBudgets();
         } catch (err: any) {
             console.error("Error:", err);
         }
