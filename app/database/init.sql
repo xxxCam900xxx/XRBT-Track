@@ -2,6 +2,7 @@
 CREATE TABLE Budget (
     budget_id SERIAL PRIMARY KEY,
     titel TEXT NOT NULL,
+    jahr INT NOT NULL,
     total_einnahmen NUMERIC(10, 2) DEFAULT 0,
     total_ausgaben NUMERIC(10, 2) DEFAULT 0,
     total_umsatz NUMERIC(10, 2) GENERATED ALWAYS AS (total_einnahmen + total_ausgaben) STORED
@@ -38,8 +39,8 @@ CREATE TABLE Template (
 );
 
 -- Budget
-INSERT INTO Budget (titel, total_einnahmen, total_ausgaben)
-VALUES ('Jahresbudget 2025', 24000, -18000);
+INSERT INTO Budget (titel, jahr, total_einnahmen, total_ausgaben)
+VALUES ('Jahresbudget 2025', 2025, 24000, -18000);
 
 -- 12 Monate
 INSERT INTO Monat (budget_id, monat_name, start_datum, end_datum, total_einnahmen, total_ausgaben) VALUES
