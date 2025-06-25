@@ -11,6 +11,7 @@ router = APIRouter(
 
 class BudgetModel(BaseModel):
     titel: str
+    jahr: int
     
 class BudgetUpdModel(BaseModel):
     total_einnahmen: float

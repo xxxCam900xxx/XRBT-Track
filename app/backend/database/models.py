@@ -10,6 +10,7 @@ class Budget(Base):
 
     budget_id = Column(Integer, primary_key=True)
     titel = Column(Text, nullable=False)
+    jahr = Column(Integer, nullable=False)
     total_einnahmen = Column(Numeric(10, 2), default=0)
     total_ausgaben = Column(Numeric(10, 2), default=0)
     total_umsatz = Column(Numeric(10, 2), Computed("total_einnahmen - total_ausgaben", persisted=True))

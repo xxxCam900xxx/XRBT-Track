@@ -14,16 +14,17 @@ MONTH_NAMES = [
 ]
 
 async def getAllBudgets(db: AsyncSession):
-    result = await db.execute(select(Budget).order_by(Budget.budget_id))
+    result = await db.execute(select(Budget).order_by(Budget.jahr))
     return result.scalars().all()
 
 async def createBudget(body, db: AsyncSession):
+    
+    year = body.jahr if body.jahr else datetime.now().year
+    
     # Budget erstellen
-    insert_stmt = insert(Budget).values(titel=body.titel).returning(Budget.budget_id)
+    insert_stmt = insert(Budget).values(titel=body.titel, jahr=year).returning(Budget.budget_id)
     result = await db.execute(insert_stmt)
     budget_id = result.scalar_one()
-
-    year = datetime.now().year
 
     # 12 Monate mit Datum einfügen
     for i, name in enumerate(MONTH_NAMES, start=1):
@@ -99,6 +100,7 @@ async def getAllBookingsPerBudget(typ: str, db):
             "Income": float(budget.total_einnahmen),
             "Outcome": float(budget.total_ausgaben),
             "Overall": float(budget.total_einnahmen + budget.total_ausgaben),
+            "Year": budget.jahr,
             "Months": months_data
         })
 
