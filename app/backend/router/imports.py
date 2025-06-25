@@ -8,6 +8,6 @@ router = APIRouter(
     tags=["import"]
 )
 
-@router.post("/")
-async def import_csv(file: UploadFile = File(...), db: AsyncSession = Depends(get_db)):
-    return await importCSV(file, db)
+@router.post("/{budget_id}")
+async def import_csv(budget_id, file: UploadFile = File(...), db: AsyncSession = Depends(get_db)):
+    return await importCSV(budget_id, file, db)

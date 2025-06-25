@@ -12,10 +12,11 @@ async def exportData(budget_id: int, db: AsyncSession) -> str:
     output = StringIO()
     writer = csv.writer(output)
 
-    writer.writerow(["Monat", "Typ", "Titel", "Datum", "Betrag"])
+    writer.writerow(["BuchungID", "Monat", "Typ", "Titel", "Datum", "Betrag"])
 
     def buchung_to_row(monat: str, typ: str, b: Buchung):
         return [
+            b.buchung_id,
             monat,
             typ.capitalize(),
             b.titel,
