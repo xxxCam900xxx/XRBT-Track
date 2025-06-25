@@ -18,8 +18,6 @@ Ein einfacher Budget-Tracker mit grossem Funktionsumfang, der sich durch eine ei
   - [Lizenz](#lizenz)
   - [Kontakt](#kontakt)
 
----
-
 ## Installation
 1. Repository klonen
 ```bash
@@ -32,21 +30,15 @@ cd path/to/repo
 docker compose -f .\compose.app.yaml up
 ```
 
----
-
 ## Features
 Alle Feature und Konzepte findest du hier:
 - [Klicken Sie hier, um mehr zu erfahren](/concept/README.md)
-
----
 
 ## Design
 Genauere Informationen zum kompletten Design findest du hier:
 - [Klicken Sie hier, um mehr zu erfahren](https://embed.figma.com/design/3pk8y0QeCmWFo15dD79rdp/React-Buget-Tracker?node-id=0-1&embed-host=share)
 
 ![](./concept/images/Design.png)
-
----
 
 ## Technologien
 
@@ -57,19 +49,13 @@ Genauere Informationen zum kompletten Design findest du hier:
 - ![Python](https://img.shields.io/badge/Python-3.11-blue?logo=python&logoColor=white)
 - ![FastAPI](https://img.shields.io/badge/FastAPI-v0.95-green?logo=fastapi&logoColor=white)
 
----
-
 ## Projekt Kanban
 Für Projektmitarbeitende findest du hier das Issue Board des Projekts:
 - [Klicken Sie hier, um mehr zu erfahren](https://github.com/users/xxxCam900xxx/projects/9)
 
----
-
 ## Lizenz
 
 Dieses Projekt ist lizenziert unter der selbst definierten Lizenz – siehe [LICENSE](LICENSE) Datei für Details.
-
----
 
 ## Kontakt
 
