@@ -1,8 +1,5 @@
 import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Month } from '../types/month';
-import { Booking } from '../types/booking';
-
 import {
   LineChart,
   Line,
@@ -14,137 +11,117 @@ import {
   Legend,
 } from 'recharts';
 
-function BudgetPlanView() {
-  const location = useLocation();
-  const { budget_id } = location.state || {};
-  const { budget_name } = location.state || {};
+import { Month } from '../types/month';
+import { Booking } from '../types/booking';
 
-  const [data, setData] = useState<Month[]>([]);
+const backendUrl = "http://localhost:8000";
+
+const BudgetPlanView = () => {
+  const { state } = useLocation();
+  const navigate = useNavigate();
+  const { budget_id, budget_name } = state || {};
+
+  const [months, setMonths] = useState<Month[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [totalIncomes, setTotalIncomes] = useState(0);
   const [totalOutgoings, setTotalOutgoings] = useState(0);
   const [total, setTotal] = useState(0);
-  const [allTitles, setAllTitles] = useState<string[]>([]);
-
   const [lineChartData, setLineChartData] = useState<any[]>([]);
   const [gesamtLineChartData, setGesamtLineChartData] = useState<any[]>([]);
+  const [categoryTitles, setCategoryTitles] = useState<string[]>([]);
   const [visibleLines, setVisibleLines] = useState({
     einnahmen: true,
     ausgaben: true,
     umsatz: true,
   });
 
-
-  const backendUrl = "http://localhost:8000";
-  const navigate = useNavigate();
-
-  const goBack = () => navigate(-1);
+  const toggleLine = (key: keyof typeof visibleLines) => {
+    setVisibleLines(prev => ({ ...prev, [key]: !prev[key] }));
+  };
 
   const navigateToMonth = (id: string, name: string, startDate: string) => {
     navigate("/plan/month", {
-      state: { month_id: id, monthName: name, monthStart: startDate},
+      state: { month_id: id, monthName: name, monthStart: startDate },
     });
   };
 
   const fetchBudgets = async (): Promise<Month[]> => {
-    const response = await fetch(`${backendUrl}/month/${budget_id}`);
-    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-    const months: Month[] = await response.json();
-    setData(months);
-    setLineChartData(erstelleLineChartDaten(months, 'umsatz'));
-    return months;
+    const res = await fetch(`${backendUrl}/month/${budget_id}`);
+    if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+    return await res.json();
   };
 
   const fetchAmounts = async (type: 'einnahme' | 'ausgabe') => {
-    const response = await fetch(`${backendUrl}/month/${budget_id}/${type}`);
-    if (!response.ok) throw new Error(`HTTP Error! Status: ${response.status}`);
-    const result: { Monat: string; Buchungen: Booking[] }[] = await response.json();
-    return result;
+    const res = await fetch(`${backendUrl}/month/${budget_id}/${type}`);
+    if (!res.ok) throw new Error(`HTTP Error! Status: ${res.status}`);
+    return await res.json();
   };
 
-  const toggleLine = (key: 'einnahmen' | 'ausgaben' | 'umsatz') => {
-    setVisibleLines(prev => ({ ...prev, [key]: !prev[key] }));
-  };
-
-  function bereiteLineChartDatenVor(data: { Monat: string; Buchungen: Booking[] }[]) {
-    const monatZuTitel: Record<string, Record<string, number>> = {};
+  const prepareCategoryChartData = (data: { Monat: string; Buchungen: Booking[] }[]) => {
+    const monthlyData: Record<string, Record<string, number>> = {};
 
     data.forEach(({ Monat, Buchungen }) => {
-      if (!monatZuTitel[Monat]) monatZuTitel[Monat] = {};
-      Buchungen.forEach(b => {
-        const betrag = Math.abs(parseFloat(b.betrag));
-        monatZuTitel[Monat][b.titel] = (monatZuTitel[Monat][b.titel] || 0) + betrag;
+      if (!monthlyData[Monat]) monthlyData[Monat] = {};
+      Buchungen.forEach(({ titel, betrag }) => {
+        const amount = Math.abs(parseFloat(betrag));
+        monthlyData[Monat][titel] = (monthlyData[Monat][titel] || 0) + amount;
       });
     });
 
-    const titelSet = new Set<string>();
-    Object.values(monatZuTitel).forEach(obj => {
-      Object.keys(obj).forEach(titel => titelSet.add(titel));
-    });
+    const allTitles = Array.from(
+      new Set(Object.values(monthlyData).flatMap(obj => Object.keys(obj)))
+    );
 
-    const result = Object.entries(monatZuTitel).map(([Monat, werte]) => {
-      const eintrag: any = { Monat };
-      titelSet.forEach(titel => {
-        eintrag[titel] = werte[titel] || 0;
+    const chartData = Object.entries(monthlyData).map(([Monat, values]) => {
+      const entry: any = { Monat };
+      allTitles.forEach(titel => {
+        entry[titel] = values[titel] || 0;
       });
-      return eintrag;
+      return entry;
     });
 
-    return { daten: result, titelListe: Array.from(titelSet) };
-  }
+    return { chartData, allTitles };
+  };
 
-  function erstelleLineChartDaten(monatsdaten: Month[], chartType: 'umsatz' | 'einnahmen' | 'ausgaben') {
-    return monatsdaten.map(month => ({
+  const buildLineChartData = (data: Month[], type: keyof Pick<Month, 'total_einnahmen' | 'total_ausgaben' | 'total_umsatz'>) => {
+    return data.map(month => ({
       Monat: month.monat_name,
-      Wert:
-        chartType === 'einnahmen'
-          ? parseFloat(month.total_einnahmen || '0')
-          : chartType === 'ausgaben'
-            ? parseFloat(month.total_ausgaben || '0')
-            : parseFloat(month.total_umsatz || '0'),
+      Wert: parseFloat(month[type] || '0'),
     }));
-  }
+  };
 
-  function erstelleGesamtLineChartDaten(monatsdaten: Month[]) {
-    return monatsdaten.map(month => ({
+  const buildTotalLineChartData = (data: Month[]) => {
+    return data.map(month => ({
       Monat: month.monat_name,
       einnahmen: parseFloat(month.total_einnahmen || '0'),
       ausgaben: parseFloat(month.total_ausgaben || '0'),
       umsatz: parseFloat(month.total_umsatz || '0'),
     }));
-  }
+  };
 
-  function stringToRandomPastelColor(str: string): string {
+  const generatePastelColor = (str: string): string => {
     let hash = 0;
     for (let i = 0; i < str.length; i++) {
       hash = (hash << 5) - hash + str.charCodeAt(i) * (i + 1);
-      hash |= 0; // Force 32bit integer
+      hash |= 0;
     }
     const h = Math.abs(hash) % 360;
-
-    // Zufällige leichte Variation von Sättigung und Helligkeit
-    const s = 50 + (Math.abs(hash * 7) % 20); // 50–69%
-    const l = 75 + (Math.abs(hash * 13) % 15); // 75–89%
-
+    const s = 50 + (Math.abs(hash * 7) % 20);
+    const l = 75 + (Math.abs(hash * 13) % 15);
     return `hsl(${h}, ${s}%, ${l}%)`;
-  }
+  };
 
   useEffect(() => {
     if (!budget_id) return;
 
     const loadData = async () => {
       try {
-        const fetchedMonths = await fetchBudgets();
+        const months = await fetchBudgets();
+        setMonths(months);
 
-        const totalIn = fetchedMonths.reduce(
-          (sum, item) => sum + parseFloat(item.total_einnahmen || '0'),
-          0
-        );
-        const totalOut = fetchedMonths.reduce(
-          (sum, item) => sum + parseFloat(item.total_ausgaben || '0'),
-          0
-        );
+        const totalIn = months.reduce((sum, m) => sum + parseFloat(m.total_einnahmen || '0'), 0);
+        const totalOut = months.reduce((sum, m) => sum + parseFloat(m.total_ausgaben || '0'), 0);
 
         setTotalIncomes(totalIn);
         setTotalOutgoings(totalOut);
@@ -153,18 +130,15 @@ function BudgetPlanView() {
         await fetch(`${backendUrl}/budget/${budget_id}`, {
           method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            total_einnahmen: totalIn,
-            total_ausgaben: totalOut,
-          }),
+          body: JSON.stringify({ total_einnahmen: totalIn, total_ausgaben: totalOut }),
         });
 
-        const ausgaben = await fetchAmounts('ausgabe');
-        const { daten, titelListe } = bereiteLineChartDatenVor(ausgaben);
-        setGesamtLineChartData(erstelleGesamtLineChartDaten(fetchedMonths));
-        setLineChartData(daten);
-        setAllTitles(titelListe);
+        const expenses = await fetchAmounts('ausgabe');
+        const { chartData, allTitles } = prepareCategoryChartData(expenses);
 
+        setGesamtLineChartData(buildTotalLineChartData(months));
+        setLineChartData(chartData);
+        setCategoryTitles(allTitles);
       } catch (err: any) {
         console.error("Fehler beim Laden:", err);
         setError(err.message);
@@ -182,184 +156,142 @@ function BudgetPlanView() {
 
   return (
     <main className="flex flex-row h-full w-full primary-background-color">
-
-      {/* Navigation Section */}
+      {/* Sidebar */}
       <section className="w-1/4 flex flex-col h-full secondary-background-color shadow-2xl">
-
         <img src="/images/XRBT-Banner.png" alt="XRBT-Banner" className='w-full' />
-
-        <section className="w-full h-full max-h-full overflow-y-auto flex flex-col p-5 gap-3">
-          {data.map((month) => {
-
-            return (
-              <div
-                key={month.monat_id}
-                className="p-2 rounded-md cursor-pointer flex flex-row gap-5 items-center justify-between primary-background-color"
-                onClick={() => navigateToMonth(month.monat_id, month.monat_name, month.start_datum)}
-              >
-                <h3 className="text-2xl text-white font-semibold">{month.monat_name}</h3>
-                <p className={`${parseFloat(month.total_umsatz) < 0 ? 'bg-red-100 text-red-600' : 'bg-emerald-50 text-emerald-600'
-                  } p-2 rounded-md w-[150px] text-center text-lg font-medium`}>{month.total_umsatz} CHF</p>
-              </div>
-            );
-          })}
-        </section>
+        <div className="p-5 overflow-y-auto flex flex-col gap-3">
+          {months.map(month => (
+            <div
+              key={month.monat_id}
+              className="p-2 rounded-md cursor-pointer flex justify-between items-center primary-background-color"
+              onClick={() => navigateToMonth(month.monat_id, month.monat_name, month.start_datum)}
+            >
+              <h3 className="text-2xl text-white font-semibold">{month.monat_name}</h3>
+              <p className={`${parseFloat(month.total_umsatz) < 0 ? 'bg-red-100 text-red-600' : 'bg-emerald-50 text-emerald-600'} p-2 rounded-md w-[150px] text-center text-lg font-medium`}>
+                {month.total_umsatz} CHF
+              </p>
+            </div>
+          ))}
+        </div>
       </section>
 
-      {/* Dashboard Section */}
-      <aside className='flex flex-col gap-5 w-3/4 p-10 overflow-y-auto'>
-
-        {/* Namespace Section */}
-        <section className='flex flex-row justify-between items-center'>
+      {/* Dashboard */}
+      <aside className='w-3/4 p-10 overflow-y-auto flex flex-col gap-5'>
+        {/* Header */}
+        <div className='flex justify-between items-center'>
           <h1 className='text-4xl text-white font-semibold'>{budget_name}</h1>
-          {/* Return Button */}
           <button
-            className="secondary-background-color text-md aspect-square w-[50px] rounded-xl cursor-pointer flex items-center justify-center"
-            onClick={goBack}
+            onClick={() => navigate(-1)}
+            className="secondary-background-color w-[50px] aspect-square rounded-xl flex items-center justify-center"
           >
             <i className="fa-solid fa-xmark primary-background-textcolor text-3xl"></i>
           </button>
-        </section>
+        </div>
 
-        {/* Totals */}
-        <section className='flex gap-5'>
-          <div className='flex flex-col gap-2 p-3 secondary-background-color w-full h-fit rounded-md'>
-            <div className='flex flex-row gap-2 w-full items-center'>
-              <i className="fa-solid fa-piggy-bank text-3xl primary-background-textcolor"></i>
-              <h1 className='text-3xl font-semibold primary-background-textcolor'>Einnahmen</h1>
-            </div>
-            <div className='bg-emerald-50 text-emerald-600 text-center text-3xl font-semibold p-3 rounded-md'>
-              +{totalIncomes} CHF
-            </div>
-          </div>
-          <div className='flex flex-col gap-2 p-3 secondary-background-color w-full h-fit rounded-md'>
-            <div className='flex flex-row gap-2 w-full items-center'>
-              <i className="fa-solid fa-cart-shopping text-3xl primary-background-textcolor"></i>
-              <h1 className='text-3xl font-semibold primary-background-textcolor'>Ausgaben</h1>
-            </div>
-            <div className='bg-red-50 text-red-600 text-center text-3xl font-semibold p-3 rounded-md'>
-              {totalOutgoings} CHF
-            </div>
-          </div>
-          <div className='flex flex-col gap-2 p-3 secondary-background-color w-full h-fit rounded-md'>
-            <div className='flex flex-row gap-2 w-full items-center'>
-              <i className="fa-solid fa-chart-simple text-3xl primary-background-textcolor"></i>
-              <h1 className='text-3xl font-semibold primary-background-textcolor'>Umsatz</h1>
-            </div>
-            <div
-              className={`${total < 0 ? 'bg-red-50 text-red-600' : 'bg-emerald-50 text-emerald-600'
-                } text-center text-3xl font-semibold p-3 rounded-md`}
-            >
-              {total} CHF
-            </div>
-          </div>
-        </section>
-
-        {/* Statistic Jahres Verlauf */}
-        <section className='flex items-center w-full text-white justify-center'>
-
-          <div className='flex flex-col gap-2 secondary-background-color w-full p-3 rounded-md'>
-            <div className='flex flex-row gap-2 w-full items-center justify-between'>
-              <div className='flex flex-row gap-2 w-full items-center'>
-                <i className="fa-solid fa-chart-simple text-3xl primary-background-textcolor"></i>
-                <h1 className='primary-background-textcolor text-3xl font-semibold'>Jahres Verlauf</h1>
+        {/* Totals Section */}
+        <div className='flex gap-5'>
+          {[
+            { title: 'Einnahmen', icon: 'fa-piggy-bank', value: totalIncomes, color: 'bg-emerald-50 text-emerald-600', prefix: '+' },
+            { title: 'Ausgaben', icon: 'fa-cart-shopping', value: totalOutgoings, color: 'bg-red-50 text-red-600' },
+            { title: 'Umsatz', icon: 'fa-chart-simple', value: total, color: total < 0 ? 'bg-red-50 text-red-600' : 'bg-emerald-50 text-emerald-600' },
+          ].map(({ title, icon, value, color, prefix }) => (
+            <div key={title} className='flex flex-col gap-2 p-3 secondary-background-color w-full rounded-md'>
+              <div className='flex gap-2 items-center'>
+                <i className={`fa-solid ${icon} text-3xl primary-background-textcolor`} />
+                <h1 className='text-3xl font-semibold primary-background-textcolor'>{title}</h1>
               </div>
-              <div className='flex flex-row gap-2 items-center'>
-                {(['einnahmen', 'ausgaben', 'umsatz'] as const).map((key) => (
-                  <button
-                    key={key}
-                    className={`p-2 rounded-md cursor-pointer font-semibold ${visibleLines[key] ? 'primary-background-color text-white' : 'bg-gray-200 text-gray-800'
-                      }`}
-                    onClick={() => toggleLine(key)}
-                  >
-                    {key.charAt(0).toUpperCase() + key.slice(1)}
-                  </button>
-                ))}
+              <div className={`${color} text-center text-3xl font-semibold p-3 rounded-md`}>
+                {prefix || ''}{value} CHF
               </div>
+            </div>
+          ))}
+        </div>
 
-            </div>
-            <div className='h-[250px]'>
-              <ResponsiveContainer width="100%" height="100%" className="bg-white rounded-md p-5">
-                <LineChart data={gesamtLineChartData}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="Monat" />
-                  <YAxis />
-                  <Tooltip formatter={(value) => `${value} CHF`} />
-                  <Legend />
-                  {visibleLines.einnahmen && (
-                    <Line
-                      type="monotone"
-                      dataKey="einnahmen"
-                      stroke="#10b981" // emerald-500
-                      name="Einnahmen"
-                      strokeWidth={2}
-                      dot={{ r: 3 }}
-                      connectNulls
-                    />
-                  )}
-                  {visibleLines.ausgaben && (
-                    <Line
-                      type="monotone"
-                      dataKey="ausgaben"
-                      stroke="#ef4444" // red-500
-                      name="Ausgaben"
-                      strokeWidth={2}
-                      dot={{ r: 3 }}
-                      connectNulls
-                    />
-                  )}
-                  {visibleLines.umsatz && (
-                    <Line
-                      type="monotone"
-                      dataKey="umsatz"
-                      stroke="#6366f1" // indigo-500
-                      name="Umsatz"
-                      strokeWidth={2}
-                      dot={{ r: 3 }}
-                      connectNulls
-                    />
-                  )}
-                </LineChart>
-              </ResponsiveContainer>
+        {/* Jahres Verlauf */}
+        <ChartSection
+          title="Jahres Verlauf"
+          icon="fa-chart-simple"
+          data={gesamtLineChartData}
+          visibleLines={visibleLines}
+          toggleLine={toggleLine}
+        />
 
-            </div>
-          </div>
-        </section>
-
-        {/* Statistic Umsatz Verlauf Pro Kategorie */}
-        <section className='flex items-center w-full text-white justify-center'>
-          <div className='flex flex-col gap-2 secondary-background-color w-full p-3 rounded-md'>
-            <div className='flex flex-row gap-2 w-full items-center'>
-              <i className="fa-solid fa-chart-simple text-3xl primary-background-textcolor"></i>
-              <h1 className='primary-background-textcolor text-3xl font-semibold'>Ausgaben Verlauf Pro Kategorie</h1>
-            </div>
-            <div className='h-[250px]'>
-              <ResponsiveContainer width="100%" height="100%" className={"bg-white rounded-md p-5"}>
-                <LineChart data={lineChartData}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="Monat" />
-                  <YAxis />
-                  <Tooltip formatter={(value) => `${value} CHF`} />
-                  <Legend />
-                  {allTitles.map((titel, index) => (
-                    <Line
-                      key={titel}
-                      type="monotone"
-                      dataKey={titel}
-                      stroke={stringToRandomPastelColor(titel)}
-                      strokeWidth={2}
-                      dot={{ r: 3 }}
-                      connectNulls
-                    />
-                  ))}
-                </LineChart>
-              </ResponsiveContainer>
-            </div>
-          </div>
-        </section>
+        {/* Kategorie Verlauf */}
+        <ChartSection
+          title="Ausgaben Verlauf Pro Kategorie"
+          icon="fa-chart-simple"
+          data={lineChartData}
+          categoryTitles={categoryTitles}
+          generateColor={generatePastelColor}
+        />
       </aside>
     </main>
   );
-}
+};
+
+const ChartSection = ({ title, icon, data, visibleLines, toggleLine, categoryTitles, generateColor }: any) => (
+  <section className='w-full text-white'>
+    <div className='secondary-background-color w-full p-3 rounded-md'>
+      <div className='flex justify-between items-center mb-3'>
+        <div className='flex gap-2 items-center'>
+          <i className={`fa-solid ${icon} text-3xl primary-background-textcolor`} />
+          <h1 className='primary-background-textcolor text-3xl font-semibold'>{title}</h1>
+        </div>
+        {visibleLines && toggleLine && (
+          <div className='flex gap-2'>
+            {(['einnahmen', 'ausgaben', 'umsatz'] as const).map(key => (
+              <button
+                key={key}
+                onClick={() => toggleLine(key)}
+                className={`p-2 rounded-md font-semibold ${visibleLines[key] ? 'primary-background-color text-white' : 'bg-gray-200 text-gray-800'}`}
+              >
+                {key.charAt(0).toUpperCase() + key.slice(1)}
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+      <div className='h-[250px] bg-white rounded-md p-5'>
+        <ResponsiveContainer width="100%" height="100%">
+          <LineChart data={data}>
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="Monat" />
+            <YAxis />
+            <Tooltip formatter={(value) => `${value} CHF`} />
+            <Legend />
+            {visibleLines ? (
+              Object.entries(visibleLines).map(([key, visible]) =>
+                visible ? (
+                  <Line
+                    key={key}
+                    type="monotone"
+                    dataKey={key}
+                    stroke={key === 'einnahmen' ? '#10b981' : key === 'ausgaben' ? '#ef4444' : '#6366f1'}
+                    strokeWidth={2}
+                    dot={{ r: 3 }}
+                    name={key.charAt(0).toUpperCase() + key.slice(1)}
+                    connectNulls
+                  />
+                ) : null
+              )
+            ) : (
+              categoryTitles?.map((key: string) => (
+                <Line
+                  key={key}
+                  type="monotone"
+                  dataKey={key}
+                  stroke={generateColor(key)}
+                  strokeWidth={2}
+                  dot={{ r: 3 }}
+                  connectNulls
+                />
+              ))
+            )}
+          </LineChart>
+        </ResponsiveContainer>
+      </div>
+    </div>
+  </section>
+);
 
 export default BudgetPlanView;
