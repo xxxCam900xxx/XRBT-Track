@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends
-from service.budgetService import getAllBudgets, deleteBudgetById, createBudget, updateBudgetById
+from service.budgetService import getAllBudgets, deleteBudgetById, createBudget, updateBudgetById, getAllBookingsPerBudget
 from database.database import get_db
 from sqlalchemy.ext.asyncio import AsyncSession
 from pydantic import BaseModel
@@ -31,3 +31,7 @@ async def delete_BudgetById(budget_id, db: AsyncSession = Depends(get_db)):
 @router.patch("/{budget_id}")
 async def update_BudgetById(budget_id, body: BudgetUpdModel, db: AsyncSession = Depends(get_db)):
     return await updateBudgetById(budget_id, body, db)
+
+@router.get("/stats/{typ}")
+async def get_All_Bookings_Per_Budget(typ, db: AsyncSession = Depends(get_db)):
+    return await getAllBookingsPerBudget(typ, db)

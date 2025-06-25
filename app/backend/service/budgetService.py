@@ -1,5 +1,7 @@
 import calendar
 from datetime import date, datetime
+from service.bookingService import getAllBookingsByTypeAndId
+from service.monthService import getAllMonthsByBudgetID
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from sqlalchemy import delete, insert
@@ -54,3 +56,51 @@ async def updateBudgetById(id: int, body, db: AsyncSession):
     await db.execute(updateStmt)
     await db.commit()
     return
+
+async def getAllBookingsPerBudget(typ: str, db):
+    overview_bundle = []
+
+    # Alle Budgets abrufen
+    budget_bundle = await getAllBudgets(db)
+
+    for budget in budget_bundle:
+        # Monatsübersicht pro Budget
+        month_bundle = await getAllMonthsByBudgetID(budget.budget_id, db)
+
+        # Bereite Monatsdaten vor
+        months_data = []
+
+        for month in month_bundle:
+            # Buchungen pro Monat + Typ abrufen
+            bookings = await getAllBookingsByTypeAndId(month.monat_id, typ, db)
+
+            # Buchungen als dict
+            bookings_data = [
+                {
+                    "Name": booking.titel,
+                    "Typ": booking.typ,
+                    "Betrag": float(booking.betrag)
+                }
+                for booking in bookings
+            ]
+
+            # Monatliche Übersicht
+            months_data.append({
+                "Month": month.monat_name,
+                "Income": float(month.total_einnahmen),
+                "Outcome": float(month.total_ausgaben),
+                "Overall": float(month.total_einnahmen + month.total_ausgaben),
+                "Bookings": bookings_data
+            })
+
+        # Budgetübersicht
+        overview_bundle.append({
+            "Budgetname": budget.titel,
+            "Income": float(budget.total_einnahmen),
+            "Outcome": float(budget.total_ausgaben),
+            "Overall": float(budget.total_einnahmen + budget.total_ausgaben),
+            "Months": months_data
+        })
+
+    return overview_bundle
+        
