@@ -59,6 +59,26 @@ const BudgetPlanView = () => {
     return await res.json();
   };
 
+  const downloadExport = async (): Promise<void> => {
+    const res = await fetch(`${backendUrl}/export/${budget_id}`);
+
+    if (!res.ok) {
+      throw new Error(`HTTP Error! Status: ${res.status}`);
+    }
+
+    const blob = await res.blob();
+    const url = window.URL.createObjectURL(blob);
+
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `budget_export_${budget_name}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+
+    window.URL.revokeObjectURL(url);
+  };
+
   const prepareCategoryChartData = (data: { Monat: string; Buchungen: Booking[] }[]) => {
     const monthlyData: Record<string, Record<string, number>> = {};
 
@@ -188,6 +208,7 @@ const BudgetPlanView = () => {
           </button>
           <button
             className="px-5 h-fit w-full py-2 rounded-md cursor-pointer text-white text-xl font-semibold primary-background-color"
+            onClick={downloadExport}
           >
             Export
           </button>
