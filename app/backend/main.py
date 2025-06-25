@@ -5,6 +5,8 @@ from router.budget import router as budget_router
 from router.month import router as month_router
 from router.booking import router as booking_router
 from router.template import router as template_router
+from router.imports import router as import_router
+from router.exports import router as export_router
 
 app = FastAPI()
 
@@ -33,3 +35,5 @@ app.include_router(budget_router)
 app.include_router(month_router)
 app.include_router(booking_router)
 app.include_router(template_router)
+app.include_router(import_router)
+app.include_router(export_router)
