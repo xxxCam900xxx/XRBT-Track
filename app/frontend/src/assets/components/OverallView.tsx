@@ -1,7 +1,20 @@
-import { useEffect, useState } from 'react';
+import { use, useEffect, useState } from 'react';
 import { Budget } from '../types/budget';
 import CreateNewBudgetPopUp from '../widgets/CreateNewBudgetPopUp';
 import { useNavigate } from 'react-router-dom';
+import {
+  ResponsiveContainer,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  Legend,
+  CartesianGrid,
+  LineChart,
+  Line,
+} from "recharts";
+import { BudgetStats } from '../types/overview';
 
 function OverallView() {
   const [data, setData] = useState<Budget[]>([]);
@@ -13,6 +26,7 @@ function OverallView() {
   const [total, setTotal] = useState(0);
   const backendUrl = "http://localhost:8000";
   const navigate = useNavigate();
+  const [groupedData, setGroupedData] = useState<{ Name: string; Betrag: number; Typ: string }[]>([]);
 
   const fetchBudgets = async (): Promise<Budget[]> => {
     try {
@@ -27,6 +41,38 @@ function OverallView() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const fetchStatsOverall = async (type: "einnahme" | "ausgabe"): Promise<BudgetStats[]> => {
+    try {
+      const response = await fetch(`${backendUrl}/budget/stats/${type}`);
+      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+      const data: BudgetStats[] = await response.json();
+      return data;
+    } catch (err: any) {
+      setError(err.message);
+      return [];
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  const groupBookingsByName = (budgets: BudgetStats[]) => {
+    const map: Record<string, { Betrag: number; Typ: string }> = {};
+
+    budgets.forEach(budget => {
+      budget.Months.forEach(month => {
+        month.Bookings.forEach(booking => {
+          if (!map[booking.Name]) {
+            map[booking.Name] = { Betrag: 0, Typ: booking.Typ };
+          }
+          map[booking.Name].Betrag += booking.Betrag;
+        });
+      });
+    });
+
+    // Ergebnis als Array zurückgeben mit Typ
+    return Object.entries(map).map(([Name, { Betrag, Typ }]) => ({ Name, Betrag, Typ }));
   };
 
   const CalculateTotals = async () => {
@@ -73,6 +119,10 @@ function OverallView() {
 
   useEffect(() => {
     fetchBudgets();
+    fetchStatsOverall("ausgabe").then((stats) => {
+      const grouped = groupBookingsByName(stats);
+      setGroupedData(grouped);
+    });
     CalculateTotals();
   }, []);
 
@@ -135,7 +185,7 @@ function OverallView() {
 
 
       {/* Dashboard Section */}
-      <aside className='flex flex-col gap-5 w-3/4 p-10'>
+      <aside className='flex flex-col gap-5 w-3/4 p-10 overflow-y-auto'>
         {/* Totals */}
         <section className='flex gap-5'>
           <div className='flex flex-col gap-2 p-3 secondary-background-color w-full h-fit rounded-md'>
@@ -169,8 +219,68 @@ function OverallView() {
             </div>
           </div>
         </section>
-        <section className='flex items-center w-full h-full text-white text-5xl justify-center'>
-          Statistics still in Progress...
+
+        {/* Balkendiagramm Statistik */}
+        <section className='w-full'>
+          <div className='w-full h-[400px] secondary-background-color rounded-md flex flex-col gap-2 p-3'>
+            <div className='flex flex-row gap-2'>
+              <i className="fa-solid fa-code-compare text-3xl primary-background-textcolor"></i>
+              <h1 className='text-3xl font-semibold primary-background-textcolor'>Budget Vergleiche</h1>
+            </div>
+            <div className='h-full'>
+              <ResponsiveContainer width="100%" height="100%" className="bg-white rounded-md">
+                <LineChart data={data} margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="jahr" />
+                  <YAxis />
+                  <Tooltip formatter={(value: number) => `${value.toFixed(2)} CHF`} />
+                  <Legend />
+                  <Line type="monotone" dataKey="total_einnahmen" stroke="#22c55e" name="Einnahmen" />
+                  <Line type="monotone" dataKey="total_ausgaben" stroke="#ef4444" name="Ausgaben" />
+                  <Line type="monotone" dataKey="total_umsatz" stroke="#3b82f6" name="Umsatz" />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+        </section>
+
+        {/* Amazing Tools */}
+        <section className='flex gap-5'>
+
+          {/* Kategorische Ausgaben (Table) */}
+          <div className='w-full h-[300px] secondary-background-color rounded-md p-3 flex flex-col gap-2'>
+            <div className='flex flex-row gap-2'>
+              <i className="fa-solid fa-filter text-3xl primary-background-textcolor"></i>
+              <h1 className='text-3xl primary-background-textcolor font-semibold'>Kategorische Ausgaben</h1>
+            </div>
+            <div className="w-full h-fit overflow-x-auto">
+              <table className="min-w-full h-full divide-y divide-gray-200 bg-white rounded-md overflow-hidden text-sm">
+                <thead className="primary-background-color text-white uppercase text-xs">
+                  <tr>
+                    <th className="px-5 py-2 text-left">Titel / Kategorie</th>
+                    <th className="px-5 py-2 text-left">Betrag</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-200">
+                  {groupedData.map((entry, index) => (
+                    <tr
+                      key={index}
+                      className={entry.Typ === "ausgabe" ? "bg-red-50 text-red-600" : "bg-emerald-50 text-emerald-600"}
+                    >
+                      <td className="p-5 font-medium">{entry.Name}</td>
+                      <td className="p-5">{entry.Betrag.toFixed(2)} CHF</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          {/* Kategorische Einnahme (Suche)(BudgetTable) */}
+          <div className='w-full h-[300px] secondary-background-color rounded-md'>
+
+          </div>
+
         </section>
       </aside>
 
