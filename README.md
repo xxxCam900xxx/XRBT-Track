@@ -11,6 +11,7 @@ Ein einfacher Budget-Tracker mit grossem Funktionsumfang, der sich durch eine ei
 - [Wilkommen beim React Budget Tracker!](#wilkommen-beim-react-budget-tracker)
   - [Inhaltsverzeichnis](#inhaltsverzeichnis)
   - [Installation](#installation)
+  - [Dokumentation / Guide](#dokumentation--guide)
   - [Features](#features)
   - [Design](#design)
   - [Technologien](#technologien)
@@ -29,6 +30,10 @@ cd path/to/repo
 ```bash
 docker compose -f .\compose.app.yaml up
 ```
+
+## Dokumentation / Guide
+Wollen Sie den XBRT-Tracker benutzen, aber wissen nicht wie? Ich habe ihnen eine Dokumentation / Guide erstellt, wo Sie alles wichitge über die Applikation wissen müssen als Benutzer.
+- [Kicken Sie hier um mehr zu erfahren](./documentation/README.md)
 
 ## Features
 Alle Feature und Konzepte findest du hier:
