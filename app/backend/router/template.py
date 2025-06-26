@@ -23,5 +23,5 @@ async def add_Template(body: TemplateModel, db: AsyncSession = Depends(get_db)):
     return await addTemplate(body, db)
 
 @router.delete("/{template_id}")
-async def get_All_Templates(template_id, db: AsyncSession = Depends(get_db)):
+async def delete_Template(template_id, db: AsyncSession = Depends(get_db)):
     return await deleteTemplate(template_id, db)
