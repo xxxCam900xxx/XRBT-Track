@@ -22,10 +22,11 @@ const CreateNewBookingPopUp: React.FC<CreateNewBookingPopUpProps> = ({
     const backendUrl = "http://localhost:8000"
     const [formData, setFormData] = useState({ buchung_id: booking.buchung_id, titel: booking.titel, datum: booking.datum, typ: booking.typ, betrag: booking.betrag, monat_id: `${month_id}` });
 
-    const templateExists = (titel: string, typ: string): boolean => {
+    const templateExists = (titel: string, typ: string, betrag: string): boolean => {
         return templateData.some(template =>
             template.titel.trim().toLowerCase() === titel.trim().toLowerCase() &&
-            template.typ.trim().toLowerCase() === typ.trim().toLowerCase()
+            template.typ.trim().toLowerCase() === typ.trim().toLowerCase() &&
+            parseFloat(template.betrag) === parseFloat(betrag)
         );
     };
 
@@ -64,7 +65,7 @@ const CreateNewBookingPopUp: React.FC<CreateNewBookingPopUpProps> = ({
                 const data = await response.json();
                 console.log("Budget created:", data);
 
-                if (!templateExists(formData.titel, formData.typ)) {
+                if (!templateExists(formData.titel, formData.typ, formData.betrag)) {
                     await createTemplate(formData.titel, formData.typ, processedBetrag);
                 }
 
