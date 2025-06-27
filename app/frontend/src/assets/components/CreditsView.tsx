@@ -1,13 +1,60 @@
 function CreditsView() {
     return (
-        <main className="flex flex-col h-full w-full bg-sky-300 p-10 items-center gap-5">
-            <img src="/images/XRBT-Logo.png" alt="XRBT-Logo" className="w-[200px] aspect-square rounded-md" />
-            <h1 className="text-8xl text-white w-full text-center">
+        <main className="flex flex-col min-h-screen w-full primary-background-color p-10 items-center gap-8">
+            {/* Logo */}
+            <img
+                src="/images/XRBT-Logo.png"
+                alt="XRBT-Logo"
+                className="w-[150px] aspect-square rounded-md shadow-lg"
+            />
+
+            {/* Title */}
+            <h1 className="text-6xl md:text-8xl font-extrabold text-white text-center drop-shadow-lg">
                 Credits
             </h1>
-            <p className="w-[60vw] text-center text-white text-xl overflow-y-auto">
-                Lorem ipsum dolor sit amet consectetur adipisicing elit. Soluta accusamus deleniti eligendi quos nihil recusandae neque ut repellat, unde architecto nulla? Dicta veniam itaque provident dolores repudiandae! Iusto reiciendis delectus odit iure laudantium necessitatibus quam aliquid dolor natus incidunt eligendi tempore laborum aliquam facilis numquam beatae distinctio architecto animi, inventore fuga. Ratione nobis esse consequuntur suscipit dolore quae consequatur omnis corrupti quidem hic soluta laudantium adipisci, eligendi asperiores harum sit a repudiandae aperiam? Dolorem, dicta enim laborum ad autem tempora eum ex incidunt voluptatum modi nam perferendis fuga illum tenetur nesciunt doloremque? Suscipit porro odio quibusdam, delectus corporis, officiis voluptate ut nulla consectetur similique excepturi numquam facilis omnis fugiat aliquam repellendus nam! Quo, nihil repudiandae tempore labore, asperiores deleniti quam, at corrupti perferendis amet dolorum libero non cupiditate. Doloribus praesentium incidunt minus iste voluptatem eos aut odit veritatis recusandae at dolore, ad quasi, magni accusantium, vel beatae culpa? Officia reiciendis cupiditate minus! Eaque quia voluptate aspernatur nisi incidunt obcaecati vero saepe. Aliquid dolore debitis mollitia quae incidunt molestiae tempora placeat nihil. Inventore cumque numquam, illo natus nihil at voluptatem sequi quam aspernatur ullam accusantium nisi sunt. Reiciendis, odit nobis aut quasi est placeat ratione voluptatem odio corrupti hic? Eligendi inventore omnis soluta aperiam atque? Illo iure deserunt repudiandae aspernatur iusto, ea minima fugit dolorum veritatis temporibus ipsum veniam mollitia vitae doloremque facere dolores, ad laboriosam, quam voluptates? Suscipit iusto eos magni impedit tenetur facere fuga voluptates ipsum, optio fugiat maxime, reiciendis quam commodi maiores ipsa recusandae ut fugit nobis! Corrupti assumenda, earum quidem dolore beatae commodi vitae quod impedit sequi facilis consequuntur dolorem rerum quos natus libero, facere saepe sit totam modi consequatur possimus, aliquam odio mollitia obcaecati. Aperiam enim alias at soluta est iure expedita voluptates nesciunt dignissimos. Repellat, voluptate, odio maiores necessitatibus mollitia incidunt aut atque maxime praesentium corporis culpa qui accusantium neque obcaecati. Inventore temporibus alias, eos quidem veniam hic omnis consequatur fugit. Magni quas rem omnis cumque accusantium natus odit blanditiis officiis dolores ipsum veritatis ullam, nobis quidem repellendus corporis. Minima quasi sunt ex odit reprehenderit cum? Non eaque ut reprehenderit illo voluptas est quibusdam odio ab quo, sequi placeat ipsa dolore. Ea delectus dolores saepe rerum exercitationem, necessitatibus animi vero quod libero similique quas soluta earum possimus harum cum sequi autem, tempora amet asperiores illum. Esse placeat distinctio eligendi iure eum officia quos dolore ipsam obcaecati modi, quidem ut quo facere, ipsum nostrum ad aut impedit laboriosam in quae possimus? Unde quaerat ipsum doloribus, accusamus voluptatibus odio culpa, pariatur sint dolorum praesentium ut temporibus sit id. Consequatur quis consequuntur a quod dolore animi veritatis natus aspernatur laboriosam quasi sint rem similique modi error facilis quos sit, recusandae et ut ab sunt optio? Rerum minus amet consequuntur hic voluptas molestiae eos soluta sit saepe consequatur! Dolorum neque quod modi culpa consequuntur rerum, vel magnam iure enim laudantium voluptas, dolore, in necessitatibus nesciunt dolores ipsa! Hic quod harum a dolorem, eius dolorum dolores amet consequatur beatae temporibus suscipit natus minima eaque, ut sed minus, et voluptate nemo maiores quam vel ipsa qui. Dolores excepturi dignissimos beatae quam expedita. Nisi, cupiditate sint odio quae placeat aliquid. Suscipit aliquid doloribus, id, reprehenderit ratione ipsam dicta, cum beatae sequi nihil quos tempora quisquam iste facilis vero? Unde illum tempora maiores molestias animi quis eaque doloribus distinctio, facilis consectetur similique voluptates, vero explicabo laborum cum impedit atque nihil delectus? Odio tenetur quo sit culpa veritatis, minima nostrum fuga esse non omnis autem aliquam, numquam dolorem iure hic velit cum! Consectetur eos vitae et unde amet possimus! Dolorem nulla quisquam ut quam numquam fugiat facere repellat, quia in ullam? Quisquam nemo, aut quod deserunt aspernatur aliquid porro, pariatur sapiente ipsam similique ullam, nam odit facilis? Modi odit quo accusamus, quae consequatur tenetur eveniet temporibus numquam error, expedita natus voluptatum laborum omnis minima debitis repudiandae nemo ipsa iusto dolor illo ipsum blanditiis a eius maxime. Laudantium suscipit modi perferendis explicabo nam. Harum quibusdam blanditiis perspiciatis enim id fuga commodi, a eaque iure maxime libero laudantium voluptas fugiat dolore dignissimos aut tempora quas pariatur? Quas, odio ullam. Minima animi officia, quas porro quo placeat culpa rem maiores unde cum aliquam doloremque consectetur! Ex voluptate incidunt temporibus nobis iure ipsam consequatur nihil tempore, autem repellat, nesciunt voluptas facilis quo facere, ipsum in obcaecati magni a minima libero sint esse maiores. Est libero soluta nemo sunt maiores autem quia aliquam itaque dolor. Architecto nemo animi non modi, eos error eum sed incidunt quisquam provident laboriosam aperiam recusandae veniam labore magni tempora adipisci rem pariatur aut at distinctio voluptate iste vel harum. Placeat molestiae eaque officia doloremque non perferendis minima dignissimos? Ut dolorem sequi iure perspiciatis sit nostrum consequuntur enim quod incidunt reiciendis obcaecati, magni odit, ullam ipsum hic animi dignissimos quibusdam error tempore, debitis velit pariatur? Non numquam sequi iste voluptatem, expedita alias molestias, quibusdam fugiat dignissimos illum voluptates perspiciatis rerum ut voluptate perferendis nemo, dolor nam dolores natus accusamus omnis. Facere voluptates sapiente quaerat rerum eaque recusandae in velit. Magnam pariatur debitis, eos et distinctio aspernatur velit illo modi deleniti temporibus aperiam necessitatibus tenetur laudantium blanditiis. Fugit laboriosam excepturi dolorem adipisci nesciunt similique provident, consequatur quam modi facere fugiat esse sed. Maxime explicabo, reprehenderit cupiditate dolores amet incidunt placeat voluptate illum temporibus, similique delectus unde rerum modi saepe aliquam! Magni, sunt. Iusto ducimus natus ex fugit earum at illo excepturi esse debitis ad amet, officiis deserunt molestiae dolore veritatis quas exercitationem saepe consectetur odio dignissimos beatae quia eveniet! Nemo quidem optio nostrum dolorem ipsum omnis voluptatum esse delectus adipisci ipsa, modi natus voluptate consequatur maiores vero. Et, at? Sequi enim tempore eveniet qui, dolore harum deleniti mollitia repellendus voluptate dolorum sunt laudantium iste vitae suscipit fugiat unde quam quasi. Nam atque impedit eveniet unde animi odit doloribus repudiandae tempore distinctio ducimus provident, odio deserunt aspernatur corrupti iure quae quia repellat sunt magnam, eaque mollitia officiis! Adipisci dolores, corrupti accusantium similique dolore officiis aliquam sapiente error temporibus quibusdam repellat quia ullam non itaque architecto! Dolores incidunt maiores provident sunt sapiente facere officia deleniti enim tempora quidem!
-            </p>
+
+            {/* Sections */}
+            <div className="w-full max-w-4xl flex flex-col gap-8 mt-6">
+                {/* Authors */}
+                <section className="secondary-background-color backdrop-blur-md rounded-lg p-6 shadow-md">
+                    <h2 className="text-3xl primary-background-textcolor font-semibold mb-4 flex items-center gap-2">
+                        <i className="fa-solid fa-user text-2xl"></i> Autoren
+                    </h2>
+                    <ul className="primary-background-textcolor text-lg space-y-2">
+                        <li><span className="font-bold">XRAYZU</span> – Projektleitung & Entwicklung</li>
+                    </ul>
+                </section>
+
+                {/* Design */}
+                <section className="secondary-background-color backdrop-blur-md rounded-lg p-6 shadow-md">
+                    <h2 className="text-3xl primary-background-textcolor font-semibold mb-4 flex items-center gap-2">
+                        <i className="fa-solid fa-paintbrush text-2xl"></i> Design & Inspiration
+                    </h2>
+                    <p className="primary-background-textcolor text-lg">
+                        Basierend auf modernen UI-Prinzipien, inspiriert durch Minimalismus und Accessibility-Standards.
+                    </p>
+                </section>
+
+                {/* Acknowledgments */}
+                <section className="secondary-background-color backdrop-blur-md rounded-lg p-6 shadow-md">
+                    <h2 className="text-3xl primary-background-textcolor font-semibold mb-4 flex items-center gap-2">
+                        <i className="fa-solid fa-hands-helping text-2xl"></i> Danksagung
+                    </h2>
+                    <p className="primary-background-textcolor text-lg">
+                        Besonderer Dank an alle Mitwirkenden, Tester und die Community für wertvolles Feedback und Unterstützung.
+                    </p>
+                </section>
+
+                {/* License */}
+                <section className="secondary-background-color backdrop-blur-md rounded-lg p-6 shadow-md">
+                    <h2 className="text-3xl primary-background-textcolor font-semibold mb-4 flex items-center gap-2">
+                        <i className="fa-solid fa-scale-balanced text-2xl"></i> Lizenz
+                    </h2>
+                    <p className="primary-background-textcolor text-lg">
+                        Dieses Projekt steht unter selbst definierten Lizenz. Alle Rechte vorbehalten.
+                    </p>
+                </section>
+            </div>
         </main>
     )
 }
