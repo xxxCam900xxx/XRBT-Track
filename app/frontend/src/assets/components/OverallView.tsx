@@ -247,12 +247,7 @@ function OverallView() {
         />
 
         {/* Amazing Tools */}
-        <section className='flex gap-5'>
-
-          {/* Kategorische Ausgaben (Table) */}
-          <CategoricalExpensesTable
-            groupedData={groupedData}
-          />
+        <section className='flex gap-5 flex-col lg:flex-row'>
 
           {/* Kategorische Ausgaben (Suche)(BudgetTable) */}
           <ExpensesSearchTable
@@ -261,6 +256,11 @@ function OverallView() {
             onCategoryChange={setSelectedCategory}
             totalByCategory={totalByCategory}
             rawStats={rawStats}
+          />
+
+          {/* Kategorische Ausgaben (Table) */}
+          <CategoricalExpensesTable
+            groupedData={groupedData}
           />
 
         </section>
