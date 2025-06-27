@@ -43,7 +43,7 @@ export const ChartSection: React.FC<ChartSectionProps> = ({
   return (
     <section className="w-full text-white">
       <div className="secondary-background-color w-full p-3 rounded-md">
-        <div className="flex justify-between items-center mb-3">
+        <div className="flex flex-col md:flex-row justify-between md:items-center mb-3 gap-2">
           <div className="flex gap-2 items-center">
             <i className={`fa-solid ${icon} text-3xl primary-background-textcolor`} />
             <h1 className="primary-background-textcolor text-3xl font-semibold">{title}</h1>
@@ -54,7 +54,7 @@ export const ChartSection: React.FC<ChartSectionProps> = ({
                 <button
                   key={key}
                   onClick={() => toggleLine(key)}
-                  className={`p-2 rounded-md font-semibold ${
+                  className={`p-2 rounded-md font-semibold w-full md:w-fit ${
                     visibleLines[key]
                       ? "primary-background-color text-white"
                       : "bg-gray-200 text-gray-800"
