@@ -18,7 +18,7 @@ export const SpecificExpensesSearch: React.FC<SpecificExpensesSearchProps> = ({
 }) => {
     return (
         <div className="w-full p-3 rounded-md flex flex-col primary-background-color gap-2">
-            <div className="justify-between items-center flex">
+            <div className="justify-between md:items-center gap-2 flex flex-col md:flex-row">
                 <h2 className="text-2xl text-white font-semibold">Kategorische Suche</h2>
                 {/* On Typing Searching for Betrag nach .titel  */}
                 <select
