@@ -65,7 +65,7 @@ const CreateNewBookingPopUp: React.FC<CreateNewBookingPopUpProps> = ({
                 const data = await response.json();
                 console.log("Budget created:", data);
 
-                if (!templateExists(formData.titel, formData.typ, formData.betrag)) {
+                if (!templateExists(formData.titel, formData.typ, processedBetrag.toString())) {
                     await createTemplate(formData.titel, formData.typ, processedBetrag);
                 }
 
@@ -142,6 +142,7 @@ const CreateNewBookingPopUp: React.FC<CreateNewBookingPopUpProps> = ({
             ...prev,
             titel: template.titel,
             typ: template.typ,
+            betrag: template.betrag,
         }));
     };
 
@@ -280,6 +281,7 @@ const CreateNewBookingPopUp: React.FC<CreateNewBookingPopUpProps> = ({
                                     <tr>
                                         <th scope="col" className="px-5 py-2">Titel</th>
                                         <th scope="col" className="px-5 py-2">Typ</th>
+                                        <th scope="col" className="px-5 py-2">Betrag</th>
                                         <th scope="col" className="px-5 py-2 text-right">Aktionen</th>
                                     </tr>
                                 </thead>
@@ -299,6 +301,7 @@ const CreateNewBookingPopUp: React.FC<CreateNewBookingPopUpProps> = ({
                                             >
                                                 <td className="p-5 font-medium">{template.titel}</td>
                                                 <td className="p-5 capitalize">{template.typ}</td>
+                                                <td className="p-5 capitalize">{template.betrag}</td>
                                                 <td className="p-5 text-right flex gap-3 items-center justify-end">
                                                     <button
                                                         className="cursor-pointer"
