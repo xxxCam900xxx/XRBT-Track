@@ -2,25 +2,12 @@ import { useEffect, useState, useCallback } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Booking } from "../types/booking";
 import CreateNewBookingPopUp from "../widgets/CreateNewBookingPopUp";
-import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  Legend,
-  CartesianGrid,
-  PieChart,
-  Pie,
-  Cell,
-  Tooltip,
-  ResponsiveContainer,
-  Sector
-} from "recharts";
 import { DashboardSignature } from "./ui/dashboardSignature";
 import { BookingTable } from "./tables/bookingsTable";
 import { DisplaySaldo } from "./ui/displaySaldo";
 import { SpecificExpensesSearch } from "./tools/specificExpensesSearch";
 import { MonthCousreLineChart } from "./charts/monthCourseLineChart";
+import { MonthCategoricalExpensesCakeChart } from "./charts/monthCategoricalExpensesCakeChart";
 
 function MonthView() {
   const location = useLocation();
@@ -40,10 +27,6 @@ function MonthView() {
   const [error, setError] = useState<string | null>(null);
   const [displayNewBookingPopUp, setDisplayNewBookingPopUp] =
     useState<boolean>(false);
-
-  const goBack = useCallback(() => {
-    navigate(-1);
-  }, [navigate]);
 
   const fetchBookings = useCallback(
     async (type: "einnahme" | "ausgabe") => {
@@ -213,43 +196,6 @@ function MonthView() {
     0
   );
 
-  function stringToRandomPastelColor(str: string): string {
-    let hash = 0;
-    for (let i = 0; i < str.length; i++) {
-      hash = (hash << 5) - hash + str.charCodeAt(i) * (i + 1);
-      hash |= 0; // Force 32bit integer
-    }
-    const h = Math.abs(hash) % 360;
-
-    // Zufällige leichte Variation von Sättigung und Helligkeit
-    const s = 50 + (Math.abs(hash * 7) % 20); // 50–69%
-    const l = 75 + (Math.abs(hash * 13) % 15); // 75–89%
-
-    return `hsl(${h}, ${s}%, ${l}%)`;
-  }
-
-  const renderCustomizedLabel = ({
-    cx, cy, midAngle, innerRadius, outerRadius, percent
-  }: any) => {
-    const RADIAN = Math.PI / 180;
-    const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
-    const x = cx + radius * Math.cos(-midAngle * RADIAN);
-    const y = cy + radius * Math.sin(-midAngle * RADIAN);
-
-    return (
-      <text
-        x={x}
-        y={y}
-        fill="black"
-        textAnchor={x > cx ? "start" : "end"}
-        dominantBaseline="central"
-        className="text-xs font-semibold"
-      >
-        {`${(percent * 100).toFixed(0)}%`}
-      </text>
-    );
-  };
-
   if (loading) {
     return (
       <div className="flex justify-center items-center h-screen text-lg">
@@ -297,32 +243,10 @@ function MonthView() {
           />
 
           {/* Visuelle Statistik prozentualer Kuchen */}
-          <div className="w-full p-3 rounded-md flex flex-col primary-background-color gap-2">
-            <h2 className="text-2xl text-white font-semibold">Ausgaben Prozentual</h2>
-            <div className="h-[250px]">
-              <ResponsiveContainer width="100%" height="100%" className="bg-white p-3 rounded-md">
-                <PieChart>
-                  <Pie
-                    data={pieChartData}
-                    dataKey="value"
-                    nameKey="name"
-                    cx="50%"
-                    cy="50%"
-                    outerRadius={80}
-                    label={renderCustomizedLabel}
-                  >
-                    {pieChartData.map((entry, index) => (
-                      <Cell
-                        key={`cell-${index}`}
-                        fill={stringToRandomPastelColor(entry.name)}
-                      />
-                    ))}
-                  </Pie>
-                  <Tooltip formatter={(value: number) => `${value.toFixed(2)} CHF`} />
-                </PieChart>
-              </ResponsiveContainer>
-            </div>
-          </div>
+          <MonthCategoricalExpensesCakeChart
+            pieChartData={pieChartData}
+          />
+
         </section>
 
         {/* Create Tool */}
