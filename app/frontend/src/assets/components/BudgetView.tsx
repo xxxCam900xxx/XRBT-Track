@@ -16,6 +16,7 @@ import { Booking } from '../types/booking';
 import ImportMonthsPopUp from '../widgets/ImportMonthsPopUp';
 import DashboardTotals from './ui/dashboardTotals';
 import { ChartSection } from './ui/chartSection';
+import { DashboardSignature } from './ui/dashboardSignature';
 
 const backendUrl = "http://localhost:8000";
 
@@ -212,15 +213,9 @@ const BudgetPlanView = () => {
       {/* Dashboard */}
       <aside className='w-3/4 p-10 overflow-y-auto flex flex-col gap-5'>
         {/* Header */}
-        <div className='flex justify-between items-center'>
-          <h1 className='text-4xl text-white font-semibold'>{budget_name}</h1>
-          <button
-            onClick={() => navigate(-1)}
-            className="secondary-background-color w-[50px] aspect-square rounded-xl flex items-center justify-center"
-          >
-            <i className="fa-solid fa-xmark primary-background-textcolor text-3xl"></i>
-          </button>
-        </div>
+        <DashboardSignature
+          title={budget_name}
+        />
 
         {/* Totals Section */}
         <DashboardTotals

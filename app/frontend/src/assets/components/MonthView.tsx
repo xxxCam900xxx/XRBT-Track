@@ -16,6 +16,7 @@ import {
   ResponsiveContainer,
   Sector
 } from "recharts";
+import { DashboardSignature } from "./ui/dashboardSignature";
 
 function MonthView() {
   const location = useLocation();
@@ -390,16 +391,9 @@ function MonthView() {
       <aside className='flex flex-col gap-5 w-3/4 p-10 overflow-y-auto'>
 
         {/* Namespace Section */}
-        <section className='flex flex-row justify-between items-center'>
-          <h1 className='text-4xl text-white font-semibold'>{monthName}</h1>
-          {/* Return Button */}
-          <button
-            className="secondary-background-color text-md aspect-square w-[50px] rounded-xl cursor-pointer flex items-center justify-center"
-            onClick={goBack}
-          >
-            <i className="fa-solid fa-xmark primary-background-textcolor text-3xl"></i>
-          </button>
-        </section>
+        <DashboardSignature
+          title={monthName}
+        />
 
         <section className='flex gap-5'>
           <div className='flex flex-col gap-2 p-3 secondary-background-color w-full h-fit rounded-md'>
