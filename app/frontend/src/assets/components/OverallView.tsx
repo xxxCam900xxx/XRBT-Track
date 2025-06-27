@@ -190,14 +190,14 @@ function OverallView() {
           {data.map((budget) => (
             <div
               key={budget.budget_id}
-              className="flex flex-row items-center justify-between p-3 rounded-xl relative gap-5 cursor-pointer primary-background-color"
+              className="flex flex-col md:flex-row items-start md:items-center justify-between p-3 rounded-xl relative gap-2 lg:gap-5 cursor-pointer primary-background-color"
               onClick={() => {
                 handleClickBudgetPlan(budget.budget_id, budget.titel);
                 setIsDrawerOpen(false);
               }}
             >
-              <h1 className="text-2xl text-white font-semibold">{budget.titel}</h1>
-              <div className="flex flex-row gap-2">
+              <h1 className="text-md md:text-2xl text-white font-semibold">{budget.titel}</h1>
+              <div className="flex flex-row gap-2 w-full justify-between md:justify-end">
                 <div
                   className={`${parseFloat(budget.total_umsatz) < 0
                     ? 'bg-red-50 text-red-600'

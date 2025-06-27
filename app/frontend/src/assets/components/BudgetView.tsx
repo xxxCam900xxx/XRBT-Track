@@ -203,11 +203,11 @@ const BudgetPlanView = () => {
           {months.map(month => (
             <div
               key={month.monat_id}
-              className="p-2 rounded-md cursor-pointer flex justify-between items-center primary-background-color"
+              className="p-2 rounded-md cursor-pointer flex flex-col md:flex-row justify-between items-start md:items-center primary-background-color"
               onClick={() => navigateToMonth(month.monat_id, month.monat_name, month.start_datum)}
             >
               <h3 className="text-2xl text-white font-semibold">{month.monat_name}</h3>
-              <p className={`${parseFloat(month.total_umsatz) < 0 ? 'bg-red-100 text-red-600' : 'bg-emerald-50 text-emerald-600'} p-2 rounded-md w-[150px] text-center text-lg font-medium`}>
+              <p className={`${parseFloat(month.total_umsatz) < 0 ? 'bg-red-100 text-red-600' : 'bg-emerald-50 text-emerald-600'} p-2 rounded-md w-full md:w-[150px] text-center text-lg font-medium`}>
                 {month.total_umsatz} CHF
               </p>
             </div>
