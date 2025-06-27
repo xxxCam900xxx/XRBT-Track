@@ -28,6 +28,9 @@ function MonthView() {
   const [displayNewBookingPopUp, setDisplayNewBookingPopUp] =
     useState<boolean>(false);
 
+  /* Menu */
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+
   const fetchBookings = useCallback(
     async (type: "einnahme" | "ausgabe") => {
       try {
@@ -215,8 +218,31 @@ function MonthView() {
   return (
     <main className="flex flex-row h-full w-full primary-background-color">
 
+      {/* Overlay when Drawer is open */}
+      {isDrawerOpen && (
+        <div
+          className="fixed inset-0 primary-background-color opacity-50 z-40"
+          onClick={() => setIsDrawerOpen(false)}
+        />
+      )}
+
       {/* Navigation Section */}
-      <section className="w-1/4 flex flex-col h-full secondary-background-color shadow-2xl">
+      <section
+        className={`fixed top-0 left-0 h-full w-3/4 z-50 
+          secondary-background-color shadow-2xl flex flex-col
+          transform transition-transform duration-300 ease-in-out
+          ${isDrawerOpen ? 'translate-x-0' : '-translate-x-full'}
+          lg:relative lg:translate-x-0 lg:w-1/4
+          `}
+      >
+
+        {/* Toggle Button am Drawer-Rand */}
+        <button
+          className="absolute top-4 -right-15 secondary-background-color text-white p-3 rounded-r-md shadow-md lg:hidden"
+          onClick={() => setIsDrawerOpen(!isDrawerOpen)}
+        >
+          <i className="fa-solid fa-compass text-4xl primary-background-textcolor"></i>
+        </button>
 
         {/* Banner Image */}
         <img src="/images/XRBT-Banner.png" alt="XRBT-Banner" className='w-full' />
@@ -262,7 +288,7 @@ function MonthView() {
       </section>
 
       {/* Dashboard */}
-      <aside className='flex flex-col gap-5 w-3/4 p-10 overflow-y-auto'>
+      <aside className='w-full flex flex-col gap-5 lg:w-3/4 px-5 py-25 lg:p-10 overflow-y-auto'>
 
         {/* Namespace Section */}
         <DashboardSignature

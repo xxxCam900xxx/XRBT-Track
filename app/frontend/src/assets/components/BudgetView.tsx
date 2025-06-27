@@ -35,6 +35,9 @@ const BudgetPlanView = () => {
   const [gesamtLineChartData, setGesamtLineChartData] = useState<any[]>([]);
   const [categoryTitles, setCategoryTitles] = useState<string[]>([]);
 
+  /* Menu */
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+
   const navigateToMonth = (id: string, name: string, startDate: string) => {
     navigate("/plan/month", {
       state: { month_id: id, monthName: name, monthStart: startDate },
@@ -168,8 +171,33 @@ const BudgetPlanView = () => {
 
   return (
     <main className="flex flex-row h-full w-full primary-background-color">
+
+      {/* Overlay when Drawer is open */}
+      {isDrawerOpen && (
+        <div
+          className="fixed inset-0 primary-background-color opacity-50 z-40"
+          onClick={() => setIsDrawerOpen(false)}
+        />
+      )}
+
       {/* Sidebar */}
-      <section className="w-1/4 flex flex-col h-full secondary-background-color shadow-2xl">
+      <section
+        className={`fixed top-0 left-0 h-full w-3/4 z-50 
+          secondary-background-color shadow-2xl flex flex-col
+          transform transition-transform duration-300 ease-in-out
+          ${isDrawerOpen ? 'translate-x-0' : '-translate-x-full'}
+          lg:relative lg:translate-x-0 lg:w-1/4
+          `}
+      >
+
+        {/* Toggle Button am Drawer-Rand */}
+        <button
+          className="absolute top-4 -right-15 secondary-background-color text-white p-3 rounded-r-md shadow-md lg:hidden"
+          onClick={() => setIsDrawerOpen(!isDrawerOpen)}
+        >
+          <i className="fa-solid fa-compass text-4xl primary-background-textcolor"></i>
+        </button>
+
         <img src="/images/XRBT-Banner.png" alt="XRBT-Banner" className='w-full' />
         <div className="p-5 overflow-y-auto flex flex-col gap-3">
           {months.map(month => (
@@ -211,7 +239,7 @@ const BudgetPlanView = () => {
       </section>
 
       {/* Dashboard */}
-      <aside className='w-3/4 p-10 overflow-y-auto flex flex-col gap-5'>
+      <aside className='w-full lg:w-3/4 px-5 py-25 lg:p-10 overflow-y-auto flex flex-col gap-5'>
         {/* Header */}
         <DashboardSignature
           title={budget_name}

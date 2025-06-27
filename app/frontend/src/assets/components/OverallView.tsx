@@ -32,8 +32,10 @@ function OverallView() {
   const navigate = useNavigate();
   const [groupedData, setGroupedData] = useState<{ Name: string; Betrag: number; Typ: string }[]>([]);
   const [rawStats, setRawStats] = useState<BudgetStats[]>([]);
-
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+
+  /* Menu */
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
   const availableCategories = groupedData
     .filter(entry => entry.Typ === "ausgabe")
@@ -135,27 +137,6 @@ function OverallView() {
     })
   }
 
-  // filtered per budget table rows for selectedCategory
-  const filteredTableRows = selectedCategory
-    ? rawStats.map((budget, idx) => {
-      let total = 0;
-      budget.Months.forEach(month => {
-        month.Bookings.forEach(b => {
-          if (b.Typ === "ausgabe" && b.Name === selectedCategory) {
-            total += b.Betrag;
-          }
-        });
-      });
-      if (total === 0) return null;
-      return (
-        <tr key={idx} className="bg-red-50 text-red-600">
-          <td className="px-6 py-4">{budget.Budgetname}</td>
-          <td className="px-6 py-4">{total.toFixed(2)} CHF</td>
-        </tr>
-      );
-    })
-    : null;
-
   useEffect(() => {
     fetchBudgets();
     fetchStatsOverall("ausgabe").then((stats) => {
@@ -176,11 +157,33 @@ function OverallView() {
   return (
     <main className="flex flex-row h-full w-full primary-background-color">
 
-      {/* Navigation Bar Section */}
-      <section className="w-1/4 flex flex-col h-full secondary-background-color shadow-2xl">
+      {/* Overlay when Drawer is open */}
+      {isDrawerOpen && (
+        <div
+          className="fixed inset-0 primary-background-color opacity-50 z-40"
+          onClick={() => setIsDrawerOpen(false)}
+        />
+      )}
 
-        {/* Banner Image */}
-        <img src="/images/XRBT-Banner.png" alt="XRBT-Banner" className='w-full' />
+      {/* Navigation Drawer */}
+      <section
+        className={`fixed top-0 left-0 h-full w-3/4 z-50 
+          secondary-background-color shadow-2xl flex flex-col
+          transform transition-transform duration-300 ease-in-out
+          ${isDrawerOpen ? 'translate-x-0' : '-translate-x-full'}
+          lg:relative lg:translate-x-0 lg:w-1/4
+          `}
+      >
+        {/* Toggle Button am Drawer-Rand */}
+        <button
+          className="absolute top-4 -right-15 secondary-background-color text-white p-3 rounded-r-md shadow-md lg:hidden"
+          onClick={() => setIsDrawerOpen(!isDrawerOpen)}
+        >
+          <i className="fa-solid fa-compass text-4xl primary-background-textcolor"></i>
+        </button>
+
+        {/* Banner */}
+        <img src="/images/XRBT-Banner.png" alt="XRBT-Banner" className="w-full" />
 
         {/* Budget Folder List */}
         <section className="w-full h-full max-h-full overflow-y-auto flex flex-col p-5 gap-3">
@@ -188,12 +191,19 @@ function OverallView() {
             <div
               key={budget.budget_id}
               className="flex flex-row items-center justify-between p-3 rounded-xl relative gap-5 cursor-pointer primary-background-color"
-              onClick={() => handleClickBudgetPlan(budget.budget_id, budget.titel)}
+              onClick={() => {
+                handleClickBudgetPlan(budget.budget_id, budget.titel);
+                setIsDrawerOpen(false);
+              }}
             >
               <h1 className="text-2xl text-white font-semibold">{budget.titel}</h1>
-              <div className='flex flex-row gap-2'>
-                <div className={`${parseFloat(budget.total_umsatz) < 0 ? 'bg-red-50 text-red-600' : 'bg-emerald-50 text-emerald-600'
-                  } font-semibold p-2 w-[100px] text-center rounded-md`}>
+              <div className="flex flex-row gap-2">
+                <div
+                  className={`${parseFloat(budget.total_umsatz) < 0
+                    ? 'bg-red-50 text-red-600'
+                    : 'bg-emerald-50 text-emerald-600'
+                    } font-semibold p-2 w-[100px] text-center rounded-md`}
+                >
                   {budget.total_umsatz} CHF
                 </div>
                 <button
@@ -228,7 +238,7 @@ function OverallView() {
       </section>
 
       {/* Dashboard Section */}
-      <aside className='flex flex-col gap-5 w-3/4 p-10 overflow-y-auto'>
+      <aside className='flex flex-col gap-5 w-full lg:w-3/4 px-5 py-25 lg:p-10 overflow-y-auto'>
         {/* Totals */}
         <DashboardTotals
           totalIncomes={totalIncomes}
