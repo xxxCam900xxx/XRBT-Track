@@ -33,15 +33,6 @@ const BudgetPlanView = () => {
   const [lineChartData, setLineChartData] = useState<any[]>([]);
   const [gesamtLineChartData, setGesamtLineChartData] = useState<any[]>([]);
   const [categoryTitles, setCategoryTitles] = useState<string[]>([]);
-  const [visibleLines, setVisibleLines] = useState({
-    einnahmen: true,
-    ausgaben: true,
-    umsatz: true,
-  });
-
-  const toggleLine = (key: keyof typeof visibleLines) => {
-    setVisibleLines(prev => ({ ...prev, [key]: !prev[key] }));
-  };
 
   const navigateToMonth = (id: string, name: string, startDate: string) => {
     navigate("/plan/month", {
@@ -105,13 +96,6 @@ const BudgetPlanView = () => {
     });
 
     return { chartData, allTitles };
-  };
-
-  const buildLineChartData = (data: Month[], type: keyof Pick<Month, 'total_einnahmen' | 'total_ausgaben' | 'total_umsatz'>) => {
-    return data.map(month => ({
-      Monat: month.monat_name,
-      Wert: parseFloat(month[type] || '0'),
-    }));
   };
 
   const buildTotalLineChartData = (data: Month[]) => {
