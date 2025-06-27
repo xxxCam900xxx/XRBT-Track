@@ -160,7 +160,7 @@ function OverallView() {
       {/* Overlay when Drawer is open */}
       {isDrawerOpen && (
         <div
-          className="fixed inset-0 primary-background-color opacity-50 z-40"
+          className="fixed inset-0 primary-background-color opacity-50 z-40 lg:hidden"
           onClick={() => setIsDrawerOpen(false)}
         />
       )}
