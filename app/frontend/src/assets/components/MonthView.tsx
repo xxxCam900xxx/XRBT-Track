@@ -18,6 +18,7 @@ import {
 } from "recharts";
 import { DashboardSignature } from "./ui/dashboardSignature";
 import { BookingTable } from "./tables/bookingsTable";
+import { DisplaySaldo } from "./ui/displaySaldo";
 
 function MonthView() {
   const location = useLocation();
@@ -274,17 +275,11 @@ function MonthView() {
 
         <section className="w-full h-full max-h-full overflow-y-auto flex flex-col p-5 gap-3">
           {/* Umsatz anzeige */}
-          <div className="w-full rounded-md p-3 flex justify-between items-center primary-background-color">
-            <h2 className="text-2xl text-white font-semibold">Umsatz</h2>
-            <p
-              className={`text-xl font-bold p-2 rounded ${totalIncomes + totalOutgoings >= 0
-                ? "bg-emerald-50 text-emerald-600"
-                : "bg-red-100 text-red-600"
-                }`}
-            >
-              {(totalIncomes + totalOutgoings).toFixed(2)} CHF
-            </p>
-          </div>
+          <DisplaySaldo
+            totalIncomes={totalIncomes}
+            totalOutgoings={totalOutgoings}
+          />
+
           {/* Spezifische Suche Ausgaben */}
           <div className="w-full p-3 rounded-md flex flex-col primary-background-color gap-2">
             <div className="justify-between items-center flex">
