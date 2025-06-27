@@ -15,6 +15,7 @@ import {
   Line,
 } from "recharts";
 import { BudgetStats } from '../types/overview';
+import DashboardTotals from './ui/dashboardTotals';
 
 function OverallView() {
   const [data, setData] = useState<Budget[]>([]);
@@ -166,7 +167,6 @@ function OverallView() {
     CalculateTotals();
   }, []);
 
-
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error: {error}</p>;
 
@@ -224,42 +224,14 @@ function OverallView() {
         />
       </section>
 
-
       {/* Dashboard Section */}
       <aside className='flex flex-col gap-5 w-3/4 p-10 overflow-y-auto'>
         {/* Totals */}
-        <section className='flex gap-5'>
-          <div className='flex flex-col gap-2 p-3 secondary-background-color w-full h-fit rounded-md'>
-            <div className='flex flex-row gap-2 w-full items-center'>
-              <i className="fa-solid fa-piggy-bank text-3xl primary-background-textcolor"></i>
-              <h1 className='text-3xl font-semibold primary-background-textcolor'>Einnahmen</h1>
-            </div>
-            <div className='bg-emerald-50 text-emerald-600 text-center text-3xl font-semibold p-3 rounded-md'>
-              +{totalIncomes} CHF
-            </div>
-          </div>
-          <div className='flex flex-col gap-2 p-3 secondary-background-color w-full h-fit rounded-md'>
-            <div className='flex flex-row gap-2 w-full items-center'>
-              <i className="fa-solid fa-cart-shopping text-3xl primary-background-textcolor"></i>
-              <h1 className='text-3xl font-semibold primary-background-textcolor'>Ausgaben</h1>
-            </div>
-            <div className='bg-red-50 text-red-600 text-center text-3xl font-semibold p-3 rounded-md'>
-              {totalOutgoings} CHF
-            </div>
-          </div>
-          <div className='flex flex-col gap-2 p-3 secondary-background-color w-full h-fit rounded-md'>
-            <div className='flex flex-row gap-2 w-full items-center'>
-              <i className="fa-solid fa-chart-simple text-3xl primary-background-textcolor"></i>
-              <h1 className='text-3xl font-semibold primary-background-textcolor'>Einnahmen</h1>
-            </div>
-            <div
-              className={`${total < 0 ? 'bg-red-50 text-red-600' : 'bg-emerald-50 text-emerald-600'
-                } text-center text-3xl font-semibold p-3 rounded-md`}
-            >
-              {total} CHF
-            </div>
-          </div>
-        </section>
+        <DashboardTotals
+          totalIncomes={totalIncomes}
+          totalOutgoings={totalOutgoings}
+          total={total}
+        />
 
         {/* Balkendiagramm Statistik */}
         <section className='w-full'>

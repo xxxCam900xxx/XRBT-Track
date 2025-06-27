@@ -14,6 +14,7 @@ import {
 import { Month } from '../types/month';
 import { Booking } from '../types/booking';
 import ImportMonthsPopUp from '../widgets/ImportMonthsPopUp';
+import DashboardTotals from './ui/dashboardTotals';
 
 const backendUrl = "http://localhost:8000";
 
@@ -237,23 +238,11 @@ const BudgetPlanView = () => {
         </div>
 
         {/* Totals Section */}
-        <div className='flex gap-5'>
-          {[
-            { title: 'Einnahmen', icon: 'fa-piggy-bank', value: totalIncomes, color: 'bg-emerald-50 text-emerald-600', prefix: '+' },
-            { title: 'Ausgaben', icon: 'fa-cart-shopping', value: totalOutgoings, color: 'bg-red-50 text-red-600' },
-            { title: 'Umsatz', icon: 'fa-chart-simple', value: total, color: total < 0 ? 'bg-red-50 text-red-600' : 'bg-emerald-50 text-emerald-600' },
-          ].map(({ title, icon, value, color, prefix }) => (
-            <div key={title} className='flex flex-col gap-2 p-3 secondary-background-color w-full rounded-md'>
-              <div className='flex gap-2 items-center'>
-                <i className={`fa-solid ${icon} text-3xl primary-background-textcolor`} />
-                <h1 className='text-3xl font-semibold primary-background-textcolor'>{title}</h1>
-              </div>
-              <div className={`${color} text-center text-3xl font-semibold p-3 rounded-md`}>
-                {prefix || ''}{value} CHF
-              </div>
-            </div>
-          ))}
-        </div>
+        <DashboardTotals
+          totalIncomes={totalIncomes}
+          totalOutgoings={totalOutgoings}
+          total={total}
+        />
 
         {/* Jahres Verlauf */}
         <ChartSection
