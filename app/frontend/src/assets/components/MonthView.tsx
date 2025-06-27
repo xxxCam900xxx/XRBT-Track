@@ -17,7 +17,7 @@ import {
   Sector
 } from "recharts";
 import { DashboardSignature } from "./ui/dashboardSignature";
-import { BookingTable } from "./ui/bookingsTable";
+import { BookingTable } from "./tables/bookingsTable";
 
 function MonthView() {
   const location = useLocation();

@@ -15,8 +15,8 @@ import { Month } from '../types/month';
 import { Booking } from '../types/booking';
 import ImportMonthsPopUp from '../widgets/ImportMonthsPopUp';
 import DashboardTotals from './ui/dashboardTotals';
-import { ChartSection } from './ui/chartSection';
 import { DashboardSignature } from './ui/dashboardSignature';
+import { ChartSection } from './charts/chartSection';
 
 const backendUrl = "http://localhost:8000";
 

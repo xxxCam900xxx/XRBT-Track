@@ -16,9 +16,9 @@ import {
 } from "recharts";
 import { BudgetStats } from '../types/overview';
 import DashboardTotals from './ui/dashboardTotals';
-import { BudgetComparisonChart } from './ui/budgetComparisonChart';
-import { CategoricalExpensesTable } from './ui/categoricalExpensesTable';
-import ExpensesSearchTable from './ui/categoricalExpensesSearch';
+import { BudgetComparisonChart } from './charts/budgetComparisonChart';
+import { CategoricalExpensesTable } from './tables/categoricalExpensesTable';
+import ExpensesSearchTable from './tools/categoricalExpensesSearch';
 
 function OverallView() {
   const [data, setData] = useState<Budget[]>([]);
