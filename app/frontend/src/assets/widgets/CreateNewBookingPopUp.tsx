@@ -172,7 +172,7 @@ const CreateNewBookingPopUp: React.FC<CreateNewBookingPopUpProps> = ({
 
     return (
         <div role="popUp"
-            className="fixed top-0 left-0 w-full h-full flex gap-2 items-center justify-center"
+            className="fixed top-0 left-0 w-full h-full flex gap-2 items-center justify-center z-100"
         >
             <div className="absolute top-0 left-0 w-full h-full primary-background-color opacity-50 z-[-1]" onClick={() => setDisplayNewBookingPopUp(false)} ></div>
 

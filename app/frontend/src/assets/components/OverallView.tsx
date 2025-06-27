@@ -230,11 +230,6 @@ function OverallView() {
             Neues Budget erstellen
           </button>
         </section>
-
-        <CreateNewBudgetPopUp
-          displayNewBudgetPopUp={displayNewBudgetPopUp}
-          setDisplayNewBudgetPopUp={setDisplayNewBudgetPopUp}
-        />
       </section>
 
       {/* Dashboard Section */}
@@ -271,6 +266,10 @@ function OverallView() {
         </section>
       </aside>
 
+      <CreateNewBudgetPopUp
+        displayNewBudgetPopUp={displayNewBudgetPopUp}
+        setDisplayNewBudgetPopUp={setDisplayNewBudgetPopUp}
+      />
 
     </main>
   );

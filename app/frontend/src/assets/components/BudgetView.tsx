@@ -227,15 +227,6 @@ const BudgetPlanView = () => {
             Export
           </button>
         </div>
-
-        {displayImportPopUp && (
-          <ImportMonthsPopUp
-            displayNewBudgetPopUp={displayImportPopUp}
-            setDisplayNewBudgetPopUp={setDisplayImportPopUp}
-            budget_id={budget_id}
-            fetchBudgets={loadData}
-          />
-        )}
       </section>
 
       {/* Dashboard */}
@@ -269,6 +260,15 @@ const BudgetPlanView = () => {
           generateColor={generatePastelColor}
         />
       </aside>
+
+      {displayImportPopUp && (
+          <ImportMonthsPopUp
+            displayNewBudgetPopUp={displayImportPopUp}
+            setDisplayNewBudgetPopUp={setDisplayImportPopUp}
+            budget_id={budget_id}
+            fetchBudgets={loadData}
+          />
+        )}
     </main>
   );
 };
