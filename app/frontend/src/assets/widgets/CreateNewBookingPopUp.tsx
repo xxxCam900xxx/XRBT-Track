@@ -172,16 +172,16 @@ const CreateNewBookingPopUp: React.FC<CreateNewBookingPopUpProps> = ({
 
     return (
         <div role="popUp"
-            className="fixed top-0 left-0 w-full h-full flex gap-2 items-center justify-center z-100"
+            className="fixed top-0 left-0 w-full h-full flex flex-col md:flex-row gap-2 items-start md:items-center justify-between md:justify-center z-100"
         >
             <div className="absolute top-0 left-0 w-full h-full primary-background-color opacity-50 z-[-1]" onClick={() => setDisplayNewBookingPopUp(false)} ></div>
 
-            <div className="p-5 max-w-[500px] w-full rounded-xl secondary-background-color flex flex-col gap-2">
+            <div className="p-5 md:max-w-[500px] w-full rounded-b-md md:rounded-md flex flex-col gap-2 secondary-background-color">
                 {/* Titel */}
                 <div className="flex flex-row justify-between">
                     <div className="flex gap-2 items-center">
                         <i className="fa-solid fa-signature text-3xl primary-background-textcolor"></i>
-                        <h1 className="text-3xl primary-background-textcolor font-semibold">Neue Buchung</h1>
+                        <h1 className="text-2xl md:text-3xl primary-background-textcolor font-semibold">Neue Buchung</h1>
                     </div>
                     {/* Close Button */}
                     <button
@@ -256,12 +256,12 @@ const CreateNewBookingPopUp: React.FC<CreateNewBookingPopUpProps> = ({
                 </form>
             </div>
 
-            <div className="p-5 max-w-[500px] w-full rounded-xl secondary-background-color flex flex-col gap-5">
+            <div className="p-5 md:max-w-[500px] w-full rounded-t-md md:rounded-md flex flex-col gap-2 secondary-background-color">
                 {/* Titel */}
                 <div className="flex flex-row justify-between">
                     <div className="flex gap-2 items-center">
                         <i className="fa-solid fa-copy text-3xl primary-background-textcolor"></i>
-                        <h1 className="text-3xl primary-background-textcolor font-semibold">Durchgeführte Buchungen</h1>
+                        <h1 className="text-xl md:text-3xl primary-background-textcolor font-semibold">Durchgeführte Buchungen</h1>
                     </div>
                 </div>
                 {/* Searching Booking Feature */}

@@ -73,19 +73,19 @@ const ImportMonthsPopUp: React.FC<ImportMonthsPopUpProps> = ({
 
     return (
         <div role="popUp"
-            className="fixed top-0 left-0 w-full h-full flex items-center justify-center z-100"
+            className="fixed top-0 left-0 w-full h-full flex items-start md:items-center md:justify-center z-100"
         >
             <div
                 className="absolute top-0 left-0 w-full h-full primary-background-color opacity-50 z-[-1]"
                 onClick={() => setDisplayNewBudgetPopUp(false)}
             ></div>
 
-            <div className="p-5 max-w-[500px] w-full rounded-md flex flex-col gap-5 secondary-background-color">
+            <div className="p-5 md:max-w-[500px] w-full rounded-b-md md:rounded-md flex flex-col gap-2 secondary-background-color">
                 {/* Titel + Close */}
                 <div className="flex flex-row justify-between">
                     <div className="flex gap-2 items-center">
                         <i className="fa-solid fa-download text-3xl primary-background-textcolor"></i>
-                        <h1 className="text-3xl font-semibold primary-background-textcolor">
+                        <h1 className="text-2xl md:text-3xl primary-background-textcolor font-semibold">
                             Importieren
                         </h1>
                     </div>
