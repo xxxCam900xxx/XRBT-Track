@@ -233,7 +233,7 @@ function OverallView() {
           total={total}
         />
 
-        {/* Balkendiagramm Statistik */}
+        {/* Liniendiagramm Statistik */}
         <section className='w-full'>
           <div className='w-full h-[400px] secondary-background-color rounded-md flex flex-col gap-2 p-3'>
             <div className='flex flex-row gap-2'>

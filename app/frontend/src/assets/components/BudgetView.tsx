@@ -15,6 +15,7 @@ import { Month } from '../types/month';
 import { Booking } from '../types/booking';
 import ImportMonthsPopUp from '../widgets/ImportMonthsPopUp';
 import DashboardTotals from './ui/dashboardTotals';
+import { ChartSection } from './ui/chartSection';
 
 const backendUrl = "http://localhost:8000";
 
@@ -249,8 +250,7 @@ const BudgetPlanView = () => {
           title="Jahres Verlauf"
           icon="fa-chart-simple"
           data={gesamtLineChartData}
-          visibleLines={visibleLines}
-          toggleLine={toggleLine}
+          withToggle
         />
 
         {/* Kategorie Verlauf */}
@@ -265,70 +265,4 @@ const BudgetPlanView = () => {
     </main>
   );
 };
-
-const ChartSection = ({ title, icon, data, visibleLines, toggleLine, categoryTitles, generateColor }: any) => (
-  <section className='w-full text-white'>
-    <div className='secondary-background-color w-full p-3 rounded-md'>
-      <div className='flex justify-between items-center mb-3'>
-        <div className='flex gap-2 items-center'>
-          <i className={`fa-solid ${icon} text-3xl primary-background-textcolor`} />
-          <h1 className='primary-background-textcolor text-3xl font-semibold'>{title}</h1>
-        </div>
-        {visibleLines && toggleLine && (
-          <div className='flex gap-2'>
-            {(['einnahmen', 'ausgaben', 'umsatz'] as const).map(key => (
-              <button
-                key={key}
-                onClick={() => toggleLine(key)}
-                className={`p-2 rounded-md font-semibold ${visibleLines[key] ? 'primary-background-color text-white' : 'bg-gray-200 text-gray-800'}`}
-              >
-                {key.charAt(0).toUpperCase() + key.slice(1)}
-              </button>
-            ))}
-          </div>
-        )}
-      </div>
-      <div className='h-[250px] bg-white rounded-md p-5'>
-        <ResponsiveContainer width="100%" height="100%">
-          <LineChart data={data}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="Monat" />
-            <YAxis />
-            <Tooltip formatter={(value) => `${value} CHF`} />
-            <Legend />
-            {visibleLines ? (
-              Object.entries(visibleLines).map(([key, visible]) =>
-                visible ? (
-                  <Line
-                    key={key}
-                    type="monotone"
-                    dataKey={key}
-                    stroke={key === 'einnahmen' ? '#10b981' : key === 'ausgaben' ? '#ef4444' : '#6366f1'}
-                    strokeWidth={2}
-                    dot={{ r: 3 }}
-                    name={key.charAt(0).toUpperCase() + key.slice(1)}
-                    connectNulls
-                  />
-                ) : null
-              )
-            ) : (
-              categoryTitles?.map((key: string) => (
-                <Line
-                  key={key}
-                  type="monotone"
-                  dataKey={key}
-                  stroke={generateColor(key)}
-                  strokeWidth={2}
-                  dot={{ r: 3 }}
-                  connectNulls
-                />
-              ))
-            )}
-          </LineChart>
-        </ResponsiveContainer>
-      </div>
-    </div>
-  </section>
-);
-
 export default BudgetPlanView;
