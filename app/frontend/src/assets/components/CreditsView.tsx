@@ -1,6 +1,19 @@
+import { useNavigate } from "react-router-dom";
+
 function CreditsView() {
+
+    const navigate = useNavigate();
+
     return (
         <main className="flex flex-col min-h-screen w-full primary-background-color p-10 items-center gap-8">
+
+            <button
+                onClick={() => navigate(-1)}
+                className="fixed top-10 right-10 cursor-pointer secondary-background-color w-[50px] aspect-square rounded-xl flex items-center justify-center"
+            >
+                <i className="fa-solid fa-xmark primary-background-textcolor text-3xl"></i>
+            </button>
+
             {/* Logo */}
             <img
                 src="/images/XRBT-Logo.png"
