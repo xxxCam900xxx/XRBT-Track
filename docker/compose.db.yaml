@@ -3,8 +3,8 @@ services:
   database:
     container_name: Database
     build:
-      context: ../App/database
-      dockerfile: ../../Docker/database/Dockerfile
+      context: ../app/database
+      dockerfile: ../../docker/database/Dockerfile
     env_file:
       - /database/db.env
     healthcheck:

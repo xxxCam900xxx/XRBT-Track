@@ -3,13 +3,13 @@ services:
   backend:
     container_name: Backend
     build:
-      context: ../App/backend
-      dockerfile: ../../Docker/backend/Dockerfile
+      context: ../app/backend
+      dockerfile: ../../docker/backend/Dockerfile
     depends_on:
       database:
         condition: service_healthy
     volumes:
-      - ../App/backend:/app
+      - ../app/backend:/app
     working_dir: /app
     ports:
       - "8000:8000"
